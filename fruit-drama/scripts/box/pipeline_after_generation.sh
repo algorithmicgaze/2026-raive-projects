@@ -10,6 +10,15 @@ if [ -f jobs_ab_apple_ceo.json ] && [ ! -d media/clips_ab ]; then
   log "A/B batch jobs_ab_apple_ceo.json"
   uv run scripts/generate_clips.py batch jobs_ab_apple_ceo.json || log "A/B FAILED"
 fi
+if ls media/control/*.mp4 >/dev/null 2>&1; then
+  until grep -q "VACE download done" media/download_vace.log 2>/dev/null; do log "waiting for VACE download"; sleep 60; done
+  uv run scripts/make_jobs.py vace "${VACE_PER_SCENE:-2}"
+  log "VACE batch jobs_vace.json ($(python3 -c "import json;print(len(json.load(open('jobs_vace.json'))))") clips)"
+  uv run scripts/generate_vace.py batch jobs_vace.json > media/generate_vace.log 2>&1 || log "VACE FAILED (see media/generate_vace.log)"
+  ls media/clips_vace/*.mp4 2>/dev/null | wc -l | xargs -I{} log "VACE clips: {}"
+else
+  log "no control clips, skipping VACE"
+fi
 OUT=media/dataset_scenes
 uv run scripts/build_pairs.py "$OUT" jobs_scenes_i2v.json jobs_scenes_t2v.json jobs_vace.json jobs_pineapple_i2v.json 2>&1 | tail -40
 log "training pix2pix"
