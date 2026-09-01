@@ -62,3 +62,11 @@ uv run scripts/make_jobs.py vace 2          # 2 control clips per scene
 uv run scripts/generate_vace.py batch jobs_vace.json
 uv run scripts/build_pairs.py media/dataset_vace jobs_vace.json   # exact pairs, no detection
 ```
+
+## After a network drop or reboot
+
+```bash
+bash scripts/box/recover.sh
+```
+Restarts the download if needed, restarts the waiters, resumes pix2pixHD
+training from its last snapshot.
