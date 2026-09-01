@@ -167,3 +167,30 @@ about an hour behind those labels. From here on, box time.
 - `pipeline_after_generation.sh` is now running and waiting for the clips.
   The full chain is armed: download → generate 16 clips → conditioning →
   `dataset_pineapple` → train 100 epochs → ONNX.
+
+## 2026-09-01 12:45 (box time) — GPU busy, scenes, skeleton-first plan
+
+- **pix2pixHD** (`scripts/train_pix2pixhd.py`, from the repo notebook: ResNet
+  global generator, two-scale PatchGAN, feature matching + VGG loss) trains on
+  the 603 apple-CEO pairs while the download finishes. 2.3 it/s at batch 4,
+  13.5 GB VRAM, 60 epochs ≈ 65 min. ONNX every 10 epochs, opset 17. Expect
+  sharper output than the U-Net; expect lower fps in Figment (heavier model).
+- **Scene code in the conditioning.** The background color of the
+  conditioning image now encodes the scene (`scenes.json`, one dark hue per
+  scene). Figment's Detect Pose and Detect Faces both have a `background`
+  parameter, so at inference the student picks the scene by picking the color.
+  One model, twelve scenes.
+- **Twelve new scenes** in `scenes.json`: character × setting × emotion, all
+  single character, frontal, full body. `make_jobs.py t2v` makes one reference
+  clip per scene; `make_jobs.py i2v` takes each reference clip's first frame
+  and makes four motion clips per scene. ~60 clips, ~7000 frames.
+- **Skeleton first** (`scripts/generate_vace.py`): Wan 2.1 VACE 1.3B takes our
+  skeleton video as control plus a reference image. Motion follows the
+  skeleton exactly, so pairs need no detection (`process_with_landmarks`).
+  `make_control_clips.py` cuts 81-frame control clips out of any
+  `landmarks.jsonl`. The download (3.5 GB, text encoder shared with Turbo)
+  starts by itself when the Turbo download ends.
+- Mac download speed: 6.5 MB/s, 2× the box. Turbo is past halfway on the box,
+  VACE is small. USB only pays off for 14B-class models.
+- Workflow is git now: write here → push → `git pull` on the box →
+  `scripts/box/restart_waiters.sh`.
