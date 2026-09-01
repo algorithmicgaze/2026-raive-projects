@@ -450,3 +450,79 @@ Cost: the detector takes about 4 min per 81-frame clip (hands + face,
 mostly CPU). `--no-hand-face` is the lever if that matters; test whether the
 face dots help the fruit faces first. Running: OpenPose renders for 12 control
 clips, then one VACE clip per scene (~1 h GPU) after the 704 regeneration.
+
+## 2026-09-01 17:00 (box time) — A/B on the confetti scene
+
+![Original vs five variants, frame 60](diary/17_ab_apple_ceo.jpg)
+
+Left to right: original · seed 103 · 6 steps · reworded · reworded + seed 103 ·
+reworded + soft style.
+
+- Rewording fixes the character: "a man whose head is a big shiny red apple
+  with eyes and a mouth" gives an apple head every time. "a red apple man"
+  gave a human three times out of three.
+- The confetti is seed- and prompt-driven, not step-driven: 6 steps changed
+  nothing; seed 103 is cleaner than 102 in every pairing. Reworded + seed 103
+  is the cleanest, with a residual mosaic in the background. The soft style
+  suffix cleans the character, not the office background.
+- Recipe for the four bad scenes: explicit "head is a big X" phrasing, a
+  plainer background (no glass walls, city view, harsh lights), and 2–3 seeds
+  per scene with an automatic speckle score to pick the reference.
+- Generation done: 12 references + 48 motion + 8 pineapple-video = 68 clips
+  in ~80 min. VACE model complete since 16:14. Pipeline continues: 24 VACE
+  clips, pairs, pix2pix, pix2pixHD.
+
+![Avocado doctor: original vs soft style](diary/18_ab_avocado.jpg)
+
+The soft style suffix does not rescue the avocado scene: same confetti, and
+the character changed. For this scene the artefact is in the prompt + seed
+itself; the fix is a plainer setting and several seeds, picked by score.
+`scripts/speckle_score.py` (mean |Laplacian| per frame, lower = cleaner) now
+ranks clips so the pick needs no eyes.
+
+Correction, 17:10: the speckle score does **not** work. Ranking of the 12
+references + A/B: rain (cherry, 14.8) and chandelier sparkle (pineapple, 12.9)
+score as speckled, the avocado confetti scores clean (10.3). Global edge
+density cannot tell scattered blobs from real detail. Picking references
+stays visual for now; 12 scenes is a small enough roster. A better metric
+would count small isolated saturated blobs, or use temporal incoherence.
+Parked.
+
+## 2026-09-01 17:05 (box time) — Skeleton-controlled generation works
+
+![Top: driving skeleton (Myrthe). Bottom: VACE output, pineapple woman](diary/19_vace_first.jpg)
+
+`pineapple_hallway__myrthe_000.mp4`: Wan 2.1 VACE 1.3B, control = our
+MediaPipe-style skeleton video, reference = the pineapple scene's first
+frame, 480×832, 81 frames, 30 steps, 4.3 min on the 4090.
+
+- Pose re-detected on **81 of 81** output frames.
+- Mean joint error between the driving skeleton and the re-detected skeleton:
+  **0.026** of the frame (2.6 %). The character does what the human did.
+- Identity held: gown, crown, pearls, hallway. VACE frames the character a
+  little larger than the skeleton but the joints line up.
+- Pairs from this clip need no detection: the landmarks that drove it are the
+  conditioning. This is the exact-pairs data path from `STRATEGY.md`, proven.
+
+Consequence: the human performance is the primary data source from here.
+Twelve minutes of one person moving gives 160 control clips; each scene can
+be animated along any of them. The 23 remaining VACE clips run until ~18:45,
+then pairs and both trainings.
+
+## 2026-09-01 18:45 (Mac time) — Tailscale key expired on the box
+
+`tailscale ping codespace-4090` → "peer's node key has expired". SSH times
+out. The box is up and the pipeline continues (VACE batch, then
+`after_vace.sh`: pairs, pix2pix, pix2pixHD), but nothing can be observed or
+synced until the node re-authenticates.
+
+Fix, on the box (keyboard or LAN):
+```
+sudo tailscale up
+```
+and open the login URL it prints. To prevent a repeat: Tailscale admin
+console → Machines → codespace-4090 → Disable key expiry.
+
+A watcher on the Mac retries SSH every minute and resumes syncing and
+reporting when the box is back. Expected on the box meanwhile: VACE done
+~18:40, pairs ~18:50, pix2pix until ~20:00, pix2pixHD until ~21:30.
