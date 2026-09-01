@@ -2,3 +2,4 @@ export/
 *.webm
 .venv/
 jobs_scenes_*.json
+jobs_vace.json

@@ -2,6 +2,7 @@
 
   uv run scripts/make_jobs.py t2v   -> jobs_scenes_t2v.json  (one reference clip per scene)
   uv run scripts/make_jobs.py i2v   -> jobs_scenes_i2v.json  (motion clips from each reference clip's first frame)
+  uv run scripts/make_jobs.py vace [N] -> jobs_vace.json     (N control clips per scene through VACE, default 1)
 
 The i2v step reads media/clips/<scene>_ref.mp4, saves frame 0 as
 media/refs/<scene>.png and writes one job per motion prompt of the scene's
@@ -61,10 +62,38 @@ def i2v_jobs():
     return jobs
 
 
+def vace_jobs(per_scene=1):
+    """Skeleton-driven clips: each scene's reference image + a control clip."""
+    controls = sorted((ROOT / "media" / "control").glob("*.mp4"))
+    if not controls:
+        print("no control clips in media/control", file=sys.stderr)
+        return []
+    fallback = ROOT / "media" / "refs" / "pineapple_mom.png"
+    jobs = []
+    for i, s in enumerate(SCENES["scenes"]):
+        ref = ROOT / "media" / "refs" / f"{s['id']}.png"
+        if not ref.exists():
+            ref = fallback
+        for k in range(per_scene):
+            control = controls[(i * per_scene + k) % len(controls)]
+            jobs.append({
+                "scene": s["id"], "background": s["color"], "seed": 2000 + 10 * i + k,
+                "image": str(ref.relative_to(ROOT)),
+                "control": str(control.relative_to(ROOT)),
+                "landmarks": str(control.with_suffix(".landmarks.jsonl").relative_to(ROOT)),
+                "out": f"media/clips_vace/{s['id']}__{control.stem}.mp4",
+                "prompt": prompt_for(s),
+            })
+    return jobs
+
+
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else "t2v"
-    jobs = t2v_jobs() if mode == "t2v" else i2v_jobs()
-    out = ROOT / f"jobs_scenes_{mode}.json"
+    if mode == "vace":
+        jobs = vace_jobs(int(sys.argv[2]) if len(sys.argv) > 2 else 1)
+    else:
+        jobs = t2v_jobs() if mode == "t2v" else i2v_jobs()
+    out = ROOT / ("jobs_vace.json" if mode == "vace" else f"jobs_scenes_{mode}.json")
     out.write_text(json.dumps(jobs, indent=1))
     print(f"{out.name}: {len(jobs)} jobs")
 
