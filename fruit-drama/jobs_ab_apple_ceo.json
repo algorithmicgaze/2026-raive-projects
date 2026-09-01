@@ -1,14 +1,53 @@
 [
-  {"mode": "t2v", "scene": "apple_ceo_office", "background": "#40400d", "seed": 103,
-   "out": "media/clips_ab/apple_ceo_office_seed103.mp4",
-   "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."},
-  {"mode": "t2v", "scene": "apple_ceo_office", "background": "#40400d", "seed": 102,
-   "out": "media/clips_ab/apple_ceo_office_reworded.mp4",
-   "prompt": "a man whose head is a big shiny red apple with eyes and a mouth, tailored black suit, white shirt, black tie, gold watch, a corner office with a dark wooden desk and a city skyline at dusk behind him. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."},
-  {"mode": "t2v", "scene": "apple_ceo_office", "background": "#40400d", "seed": 102, "steps": 6,
-   "out": "media/clips_ab/apple_ceo_office_6steps.mp4",
-   "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."},
-  {"mode": "t2v", "scene": "apple_ceo_office", "background": "#40400d", "seed": 103,
-   "out": "media/clips_ab/apple_ceo_office_reworded_seed103.mp4",
-   "prompt": "a man whose head is a big shiny red apple with eyes and a mouth, tailored black suit, white shirt, black tie, gold watch, a corner office with a dark wooden desk and a city skyline at dusk behind him. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."}
+ {
+  "mode": "t2v",
+  "scene": "apple_ceo_office",
+  "background": "#40400d",
+  "seed": 103,
+  "out": "media/clips_ab/apple_ceo_office_seed103.mp4",
+  "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "t2v",
+  "scene": "apple_ceo_office",
+  "background": "#40400d",
+  "seed": 102,
+  "out": "media/clips_ab/apple_ceo_office_reworded.mp4",
+  "prompt": "a man whose head is a big shiny red apple with eyes and a mouth, tailored black suit, white shirt, black tie, gold watch, a corner office with a dark wooden desk and a city skyline at dusk behind him. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "t2v",
+  "scene": "apple_ceo_office",
+  "background": "#40400d",
+  "seed": 102,
+  "steps": 6,
+  "out": "media/clips_ab/apple_ceo_office_6steps.mp4",
+  "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "t2v",
+  "scene": "apple_ceo_office",
+  "background": "#40400d",
+  "seed": 103,
+  "out": "media/clips_ab/apple_ceo_office_reworded_seed103.mp4",
+  "prompt": "a man whose head is a big shiny red apple with eyes and a mouth, tailored black suit, white shirt, black tie, gold watch, a corner office with a dark wooden desk and a city skyline at dusk behind him. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "t2v",
+  "scene": "apple_ceo_office",
+  "background": "#40400d",
+  "seed": 102,
+  "style": false,
+  "out": "media/clips_ab/apple_ceo_office_softstyle.mp4",
+  "prompt": "a man whose head is a big shiny red apple with eyes and a mouth, tailored black suit, white shirt, black tie, gold watch, a corner office with a dark wooden desk and a city skyline at dusk behind him. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people., 3D animated film still, Pixar style, soft studio lighting, clean smooth render, simple background"
+ },
+ {
+  "mode": "t2v",
+  "scene": "avocado_doctor",
+  "background": "#400d26",
+  "seed": 111,
+  "style": false,
+  "out": "media/clips_ab/avocado_doctor_softstyle.mp4",
+  "prompt": "an avocado doctor with a dark bumpy skin, white coat, stethoscope, clipboard, a plain hospital room with a bed and a window. Shock expression. The character gasps, raises one hand to the chest and takes one step back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people., 3D animated film still, Pixar style, soft studio lighting, clean smooth render, simple background"
+ }
 ]
