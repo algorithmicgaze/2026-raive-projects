@@ -30,17 +30,35 @@ Figment uses. So we run pose and face as two separate models, like Figment.
 
 ## Track A: distill a video model into pix2pix
 
-Runs in Figment today, 30 fps, no Figment changes.
+Runs in Figment today, 30 fps, no Figment changes. Two data paths feed it;
+the skeleton path is primary (measured 2026-09-01, see `diary.md`).
 
-1. Generate fruit-drama clips locally with Wan 2.2 TI2V-5B (Turbo, 4 steps).
-   Use image-to-video from one reference frame per character so identity stays
-   fixed across clips.
-2. Run pose and face detection on every generated frame. Render the
-   conditioning image in Figment style.
-3. Build pairs: left = generated frame (target), right = conditioning (input).
-4. Train pix2pix (`figmentapp/pix2pix`, CCM variant). Export ONNX.
-5. Load the ONNX in Figment's `ONNX Image Model` node. Feed it the live
-   `Detect Pose` + `Detect Faces` composite from the webcam.
+**Skeleton path (primary).** A human performs; Figment `Detect Pose` exports
+the landmarks. `make_control_clips.py` cuts them into 81-frame control videos.
+Wan 2.1 VACE 1.3B animates a fruit character along them (reference image =
+the scene's first frame). Pairs come from the landmarks that drove the clip:
+no detection on the output, every frame usable. Measured: pose re-detected on
+81/81 frames, joint error 2.6 % of the frame.
+
+**Prompt path (references and variety).** Wan 2.2 TI2V-5B Turbo (4 steps)
+makes one reference clip per scene from `scenes.json`, then motion clips from
+the reference frame. Detection on the output keeps only usable frames. Prompt
+rules: one character, standing, full body, facing the camera; say "a man
+whose head is a big shiny red apple", not "an apple man"; plain settings, no
+glass walls, city views or sparkling lights (they become confetti). The
+negative prompt does nothing at guidance 1.0.
+
+**Scene code.** The conditioning background color encodes the scene
+(`scenes.json`). Figment's Detect Pose / Detect Faces `background` parameter
+sets it at inference. One model, many scenes.
+
+Then: `build_pairs.py` → `train_pix2pix.py` or `train_pix2pixhd.py` → ONNX →
+Figment `ONNX Image Model`, fed by the live `Detect Pose` (+ `Detect Faces`)
+composite from the webcam.
+
+**Model choice.** pix2pixHD is clearly sharper on the same data; its ONNX is
+730 MB and ~5–8× the compute of the U-Net (218 MB). Measure fps in Figment
+before choosing; fp16 export or a lighter HD config are the middle ground.
 
 Known limits:
 - One character and one scene per model.
@@ -50,16 +68,13 @@ Known limits:
   Crowded or seated shots fail. Single character, frontal, full body works.
   Prompt for that. Curate with the per-frame CSV.
 
-Better data, next step: pose-controlled generation (Wan 2.1 VACE 1.3B,
-`WanVACEPipeline` in diffusers). We give the control video, the model follows
-it. Then the conditioning is exact, every frame is usable, and we control the
-motion. Notes:
-- VACE was trained on DWPose/OpenPose renders. Our white-on-black MediaPipe
-  skeleton is closer to a scribble control. Test whether it follows; if not,
-  render OpenPose colors from the same MediaPipe landmarks.
-- The umt5-xxl text encoder (11 GB) is the same as in the 5B repo. Load it
-  from the existing cache instead of downloading it again.
-- Needs a driving video of a person. Record one with a webcam.
+Open questions:
+- OpenPose-style colored control (VACE's training format) versus our
+  MediaPipe drawing: the MediaPipe drawing already works; test whether
+  OpenPose follows tighter.
+- Face contours: fruit faces rarely detect. Human driving data has no face
+  landmarks in the pose export. If faces matter, export Figment `Detect Faces`
+  landmarks from the human too and draw them on the same control frames.
 
 ## Track B: SD-Turbo img2img with a character LoRA
 
