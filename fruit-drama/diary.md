@@ -133,3 +133,24 @@ File size 218 MB (fp32). 400 ms on CPU; WebGPU in Figment will be far faster.
 - `scripts/box/pipeline_after_generation.sh` waits for the clips, renders
   conditioning for every generated clip, builds `media/dataset_pineapple`, and
   trains a second model. No hands needed.
+
+## 2026-09-01 13:40 — Lost SSH to the box
+
+- `ssh codespace@100.91.215.104` now fails with `Permission denied (publickey)`.
+  Cause: the 1Password SSH agent socket on the Mac is gone (1Password locked
+  while nobody is at the machine). The box only accepts the 1Password-held key.
+  Tailscale SSH is not enabled on the box. The Tailscale route is via the
+  "ams" relay, which also explains the slow rsync earlier.
+- Nothing on the box depends on me. Still running there:
+  - model download (no Xet, 3.3 MB/s, ETA ~14:45)
+  - `scripts/box/generate_when_ready.sh` → runs the three job lists when the
+    model is complete and the GPU is free
+  - pix2pix training on the apple-CEO pairs (60 epochs, ONNX every 5)
+- **Not started:** `scripts/box/pipeline_after_generation.sh` (the scp failed
+  when the key vanished). When SSH is back, or by hand:
+  ```
+  ssh codespace@100.91.215.104
+  cd ~/Work/2026-raive-projects/fruit-drama
+  setsid nohup bash scripts/box/pipeline_after_generation.sh > media/pipeline_after_generation.log 2>&1 &
+  ```
+- A watcher on the Mac retries SSH every minute and resumes automatically.
