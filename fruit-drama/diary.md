@@ -154,3 +154,16 @@ File size 218 MB (fp32). 400 ms on CPU; WebGPU in Figment will be far faster.
   setsid nohup bash scripts/box/pipeline_after_generation.sh > media/pipeline_after_generation.log 2>&1 &
   ```
 - A watcher on the Mac retries SSH every minute and resumes automatically.
+
+## 2026-09-01 12:25 (box time) — SSH back, first model finished
+
+Note on clocks: earlier entries used my estimate; the box clock is CEST and
+about an hour behind those labels. From here on, box time.
+
+- SSH works again (1Password unlocked).
+- Apple-CEO training finished: 60 epochs, 12 ONNX snapshots,
+  `media/train_apple_ceo/generator_epoch_60.onnx`.
+- Model download at 9.8 GB of ~22 GB, 3 MB/s. ETA about 65 minutes.
+- `pipeline_after_generation.sh` is now running and waiting for the clips.
+  The full chain is armed: download → generate 16 clips → conditioning →
+  `dataset_pineapple` → train 100 epochs → ONNX.
