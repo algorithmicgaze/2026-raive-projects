@@ -224,3 +224,17 @@ videos in `media/driving/` (`scripts/box/driving_to_control.sh`).
   where the U-Net does 30. Options if HD wins on quality: export fp16 (half the
   size), or `--n-blocks 6` / ngf 32 for a lighter generator. Decide after
   comparing samples at epoch 40–60.
+
+## 2026-09-01 14:06 (Mac time) — Box offline
+
+- Tailscale reports `codespace-4090 … offline, last seen 1m ago`. SSH times
+  out. Not an auth problem this time: the box left the tailnet (Wi-Fi drop,
+  suspend, or reboot).
+- If only the network dropped: pix2pixHD training continues; the HF download
+  process has probably died and needs `scripts/box/restart_download.sh`; the
+  waiters are still waiting and are fine.
+- If the box rebooted: everything stopped. Recovery when it is back:
+  `bash scripts/box/restart_download.sh && bash scripts/box/restart_waiters.sh`,
+  and `uv run scripts/train_pix2pixhd.py media/dataset_apple_ceo/pairs media/train_apple_ceo_hd --epochs 60 --batch-size 4 --snapshot-interval 10`
+  resumes from the last snapshot.
+- A watcher on the Mac retries SSH every minute.
