@@ -45,13 +45,21 @@ Runs in Figment today, 30 fps, no Figment changes.
 Known limits:
 - One character and one scene per model.
 - pix2pix quality: soft detail, some flicker between frames.
-- MediaPipe does not always find fruit faces. Frames with no face still train
-  the pose part. Measure the detection rate per clip and drop bad clips.
+- MediaPipe often finds nothing in fruit footage. Measured on the apple-CEO
+  compilation (1645 frames): 37% with a pose, 28% with a face, 10% with both.
+  Crowded or seated shots fail. Single character, frontal, full body works.
+  Prompt for that. Curate with the per-frame CSV.
 
-Better data, next step: pose-controlled generation (Wan 2.1 VACE 1.3B or
-Wan 2.2 Animate). We give the skeleton, the model follows it. Then the
-conditioning is exact and we control the motion. This needs a human driving
-video and more VRAM engineering. Do it after the baseline works.
+Better data, next step: pose-controlled generation (Wan 2.1 VACE 1.3B,
+`WanVACEPipeline` in diffusers). We give the control video, the model follows
+it. Then the conditioning is exact, every frame is usable, and we control the
+motion. Notes:
+- VACE was trained on DWPose/OpenPose renders. Our white-on-black MediaPipe
+  skeleton is closer to a scribble control. Test whether it follows; if not,
+  render OpenPose colors from the same MediaPipe landmarks.
+- The umt5-xxl text encoder (11 GB) is the same as in the 5B repo. Load it
+  from the existing cache instead of downloading it again.
+- Needs a driving video of a person. Record one with a webcam.
 
 ## Track B: SD-Turbo img2img with a character LoRA
 
