@@ -1,0 +1,74 @@
+{
+  "style": "3D animated, Pixar style, glossy skin, expressive face, cinematic lighting, shallow depth of field, high detail",
+  "framing": "One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people.",
+  "motions": {
+    "shock": [
+      "gasps, raises one hand to the chest and takes one step back",
+      "covers the mouth with both hands, eyes wide, then slowly lowers them",
+      "raises both hands in shock, then puts one hand on the hip",
+      "turns the head slowly toward the camera, eyes widening"
+    ],
+    "anger": [
+      "points accusingly at the camera, then lowers the arm and shakes the head",
+      "crosses the arms, taps a foot and glares",
+      "waves both arms while scolding, then folds the hands",
+      "leans forward with a hand on the hip, jabbing a finger"
+    ],
+    "guilt": [
+      "looks down at a phone, smiles, then hides it behind the back",
+      "adjusts the tie, looks left, then right, nervous",
+      "raises both hands in defense and steps backward",
+      "rubs the back of the neck and avoids the camera"
+    ],
+    "grief": [
+      "wipes a tear with the back of the hand and lifts the chin",
+      "hugs the own shoulders and looks down, then up",
+      "presses a hand to the mouth, shoulders shaking",
+      "slowly sinks the head, then straightens up bravely"
+    ],
+    "smug": [
+      "leans back, crosses the arms and smirks, then nods slowly",
+      "straightens the jacket, spreads the hands and shrugs",
+      "taps the side of the nose and winks",
+      "claps slowly, three times, with a grin"
+    ]
+  },
+  "scenes": [
+    {"id": "pineapple_hallway", "color": "#400d0d", "emotion": "shock",
+     "character": "a tall pineapple woman with a green leafy crown, emerald off-shoulder evening gown, pearl necklace, long lashes",
+     "setting": "a grand marble hotel hallway under a crystal chandelier, sunset light through tall windows"},
+    {"id": "broccoli_penthouse", "color": "#40260d", "emotion": "anger",
+     "character": "an elderly broccoli woman with a dense green floret head, ivory silk robe, pearl necklace, reading glasses on a chain",
+     "setting": "a luxurious penthouse living room at night, floor-to-ceiling windows, city skyline, warm lamps"},
+    {"id": "apple_ceo_office", "color": "#40400d", "emotion": "guilt",
+     "character": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch",
+     "setting": "a corner office with glass walls, a dark wooden desk, evening city view"},
+    {"id": "cherry_gate_rain", "color": "#26400d", "emotion": "grief",
+     "character": "a dark cherry woman with a long stem, red satin dress, diamond necklace, mascara running",
+     "setting": "outside a mansion gate at night in the rain, wet asphalt reflections, a suitcase at the feet"},
+    {"id": "grape_courtroom", "color": "#0d400d", "emotion": "smug",
+     "character": "a tall purple grape man made of glossy grapes, tailored black suit, slicked hair, thin smile",
+     "setting": "a courtroom with wood panels and a harsh overhead light"},
+    {"id": "banana_kitchen", "color": "#0d4026", "emotion": "anger",
+     "character": "a stern banana woman with a tight bun, beige cardigan, brooch, thin-rimmed glasses",
+     "setting": "a mansion kitchen at breakfast, marble island, morning sun through the window"},
+    {"id": "lemon_hospital", "color": "#0d4040", "emotion": "guilt",
+     "character": "a nervous lemon man, grey suit, loosened tie, sweat drops on the peel",
+     "setting": "a hospital corridor with cold fluorescent light and rain on the windows"},
+    {"id": "apple_boy_school", "color": "#0d2640", "emotion": "grief",
+     "character": "a small red apple boy, navy school blazer with a crest, striped tie, grey shorts, white socks",
+     "setting": "a school hallway with lockers and a trophy cabinet, afternoon light"},
+    {"id": "strawberry_bedroom", "color": "#0d0d40", "emotion": "anger",
+     "character": "a teenage strawberry girl with a green leaf fringe, pink hoodie, headphones around the neck",
+     "setting": "a teenage bedroom with posters, fairy lights and a messy desk"},
+    {"id": "watermelon_police", "color": "#260d40", "emotion": "smug",
+     "character": "a large watermelon police officer with a green striped rind, navy uniform, badge, cap",
+     "setting": "a hotel lobby with a marble floor, a reception desk and gold lamps"},
+    {"id": "orange_waiter", "color": "#400d40", "emotion": "shock",
+     "character": "an orange waiter with a shiny dimpled peel, white shirt, black bow tie, black apron, a tray in one hand",
+     "setting": "a rooftop restaurant at golden hour, white tablecloths, candles, city skyline"},
+    {"id": "avocado_doctor", "color": "#400d26", "emotion": "shock",
+     "character": "an avocado doctor with a dark bumpy skin, white coat, stethoscope, clipboard",
+     "setting": "a bright hospital room with a bed, monitors and a window"}
+  ]
+}

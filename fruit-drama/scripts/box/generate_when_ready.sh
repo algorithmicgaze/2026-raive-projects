@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Wait for the Wan Turbo download and the GPU, then run the generation batches.
+# Wait for the Wan Turbo download and a free GPU, then generate every scene:
+# reference clip per scene (t2v), then motion clips from each reference (i2v).
 set -euo pipefail
 cd "$(dirname "$0")/../.."
 D="$HOME/.cache/huggingface/hub/models--yetter-ai--Wan2.2-TI2V-5B-Turbo-Diffusers"
@@ -7,11 +8,15 @@ log() { echo "$(date +%H:%M:%S) $*"; }
 log "waiting for model download"
 until ls "$D"/snapshots/*/model_index.json >/dev/null 2>&1 \
       && ! ls "$D"/blobs/*.incomplete >/dev/null 2>&1 \
-      && ! pgrep -f "[h]f download" >/dev/null; do sleep 60; done
+      && ! pgrep -f "[h]f download.*Turbo" >/dev/null; do sleep 60; done
 log "model complete"
 until ! pgrep -f "[t]rain_pix2pix" >/dev/null; do log "waiting for training to finish"; sleep 60; done
 log "GPU free, generating"
-for jobs in jobs_pineapple_i2v.json jobs_pineapple.json jobs_apple_ceo.json; do
+uv run scripts/make_jobs.py t2v
+log "batch jobs_scenes_t2v.json"
+uv run scripts/generate_clips.py batch jobs_scenes_t2v.json || log "batch t2v FAILED"
+uv run scripts/make_jobs.py i2v
+for jobs in jobs_scenes_i2v.json jobs_pineapple_i2v.json; do
   log "batch $jobs"
   uv run scripts/generate_clips.py batch "$jobs" || log "batch $jobs FAILED"
 done
