@@ -1,0 +1,14 @@
+[
+  {"mode": "t2v", "scene": "apple_ceo_office", "background": "#40400d", "seed": 103,
+   "out": "media/clips_ab/apple_ceo_office_seed103.mp4",
+   "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."},
+  {"mode": "t2v", "scene": "apple_ceo_office", "background": "#40400d", "seed": 102,
+   "out": "media/clips_ab/apple_ceo_office_reworded.mp4",
+   "prompt": "a man whose head is a big shiny red apple with eyes and a mouth, tailored black suit, white shirt, black tie, gold watch, a corner office with a dark wooden desk and a city skyline at dusk behind him. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."},
+  {"mode": "t2v", "scene": "apple_ceo_office", "background": "#40400d", "seed": 102, "steps": 6,
+   "out": "media/clips_ab/apple_ceo_office_6steps.mp4",
+   "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."},
+  {"mode": "t2v", "scene": "apple_ceo_office", "background": "#40400d", "seed": 103,
+   "out": "media/clips_ab/apple_ceo_office_reworded_seed103.mp4",
+   "prompt": "a man whose head is a big shiny red apple with eyes and a mouth, tailored black suit, white shirt, black tie, gold watch, a corner office with a dark wooden desk and a city skyline at dusk behind him. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."}
+]

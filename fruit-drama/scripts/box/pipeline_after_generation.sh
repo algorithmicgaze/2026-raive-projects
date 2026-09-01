@@ -6,6 +6,10 @@ cd "$(dirname "$0")/../.."
 log() { echo "$(date +%H:%M:%S) $*"; }
 until grep -q "all batches done" media/generate_when_ready.log 2>/dev/null; do sleep 60; done
 log "clips ready: $(ls media/clips/*.mp4 | wc -l)"
+if [ -f jobs_ab_apple_ceo.json ] && [ ! -d media/clips_ab ]; then
+  log "A/B batch jobs_ab_apple_ceo.json"
+  uv run scripts/generate_clips.py batch jobs_ab_apple_ceo.json || log "A/B FAILED"
+fi
 OUT=media/dataset_scenes
 uv run scripts/build_pairs.py "$OUT" jobs_scenes_i2v.json jobs_scenes_t2v.json jobs_vace.json jobs_pineapple_i2v.json 2>&1 | tail -40
 log "training pix2pix"
