@@ -2,5 +2,7 @@ media/
 tmp/
 .DS_Store
 node_modules/
+dist/
 .env
-
+secrets/
+*.onnx
