@@ -1,0 +1,6 @@
+[
+  {"mode": "t2v", "out": "media/clips/pineapple_ref.mp4", "seed": 11,
+   "prompt": "A tall pineapple woman with a green crown, emerald off-shoulder evening gown and pearl necklace stands in a grand marble hallway under a crystal chandelier, hand on her chest, mouth open in shock, eyes wide. Medium shot, waist up, facing the camera. Sunset light through tall windows."},
+  {"mode": "t2v", "out": "media/clips/broccoli_ref.mp4", "seed": 12,
+   "prompt": "An elderly broccoli woman in an ivory silk robe and pearl necklace stands in a luxurious penthouse living room at night, pointing accusingly at the camera with an intense angry expression. Medium shot, waist up. Floor-to-ceiling windows show the city skyline."}
+]

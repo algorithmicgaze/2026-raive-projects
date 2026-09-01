@@ -59,7 +59,7 @@ def fit_image(path, width, height):
 
 def run_job(job, offload):
     mode = job.get("mode", "t2v")
-    width, height = job.get("width", 704), job.get("height", 1280)
+    width, height = job.get("width", 768), job.get("height", 1280)
     frames, steps, seed = job.get("frames", 121), job.get("steps", 4), job.get("seed", 0)
     prompt = job["prompt"] + (STYLE if job.get("style", True) else "")
     out = Path(job["out"])
@@ -96,7 +96,7 @@ def main():
     ap.add_argument("--image")
     ap.add_argument("--out")
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--width", type=int, default=704)
+    ap.add_argument("--width", type=int, default=768)
     ap.add_argument("--height", type=int, default=1280)
     ap.add_argument("--frames", type=int, default=121)
     ap.add_argument("--steps", type=int, default=4)

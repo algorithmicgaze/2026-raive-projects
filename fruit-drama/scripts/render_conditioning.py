@@ -90,6 +90,17 @@ def render(frame_rgb, pose, face):
     return np.maximum(pose_canvas, face_canvas), len(pose_res.pose_landmarks), len(face_res.face_landmarks)
 
 
+def crop_to_aspect(rgb, width, height):
+    """Center-crop the frame to width:height so a later resize does not distort."""
+    h, w = rgb.shape[:2]
+    target = width / height
+    if w / h > target:
+        nw = int(round(h * target)); x0 = (w - nw) // 2
+        return rgb[:, x0:x0 + nw]
+    nh = int(round(w / target)); y0 = (h - nh) // 2
+    return rgb[y0:y0 + nh]
+
+
 def iter_frames(source: Path, step: int):
     if source.is_dir():
         files = sorted(p for p in source.iterdir() if p.suffix.lower() in {".jpg", ".jpeg", ".png"})
@@ -117,7 +128,7 @@ def main():
     ap.add_argument("--num-faces", type=int, default=2)
     ap.add_argument("--confidence", type=float, default=0.5)
     ap.add_argument("--step", type=int, default=1, help="use every Nth frame")
-    ap.add_argument("--size", type=str, default=None, help="resize each half to WxH, e.g. 512x896")
+    ap.add_argument("--size", type=str, default=None, help="center-crop to the aspect of WxH, then resize each half to WxH, e.g. 512x768")
     ap.add_argument("--prefix", default="", help="prefix for output file names")
     ap.add_argument("--overlay", action="store_true", help="also write conditioning drawn over the source")
     ap.add_argument("--skip-empty", action="store_true", help="skip frames with no pose")
@@ -133,6 +144,8 @@ def main():
     stats = {"frames": 0, "with_pose": 0, "with_face": 0, "with_both": 0, "written": 0}
 
     for name, rgb in tqdm(iter_frames(args.source, args.step), desc=args.source.name):
+        if size:
+            rgb = crop_to_aspect(rgb, *size)
         cond, n_pose, n_face = render(rgb, pose, face)
         stats["frames"] += 1
         stats["with_pose"] += n_pose > 0
