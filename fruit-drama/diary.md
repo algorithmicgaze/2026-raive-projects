@@ -112,3 +112,24 @@ Consequences:
   Wrote `scripts/check_onnx.py` (runs the exported ONNX with onnxruntime,
   prints the input shape Figment will read) and `inference.fgmt` (webcam →
   crop 2:3 → resize 512×768 → pose + face → lighten → ONNX → out).
+
+## 2026-09-01 13:20 — pix2pix learns the pineapple
+
+![Training sample at epoch 40: input, generated, target](diary/04_train_sample_late.jpg)
+
+At epoch 40 the generator draws a pineapple woman in a green gown from a
+skeleton. When the face contour is present it renders eyes and an open
+mouth. Rows 3–4 (other scenes, partial skeletons) stay mushy: too few
+examples per scene.
+
+![ONNX check: conditioning on the left, onnxruntime output on the right](diary/05_onnx_check.jpg)
+
+`generator_epoch_40.onnx` loads in onnxruntime. Input `[batch, 3, 768, 512]`
+float32, output the same. That is what Figment's ONNX Image Model node reads.
+File size 218 MB (fp32). 400 ms on CPU; WebGPU in Figment will be far faster.
+
+- Xet fix confirmed: download now runs at 3.3 MB/s. ETA for the model
+  ~14:45.
+- `scripts/box/pipeline_after_generation.sh` waits for the clips, renders
+  conditioning for every generated clip, builds `media/dataset_pineapple`, and
+  trains a second model. No hands needed.
