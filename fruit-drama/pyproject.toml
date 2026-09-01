@@ -1,0 +1,35 @@
+[project]
+name = "fruit-drama"
+version = "0.1.0"
+description = "Realtime fruit drama: dataset generation, conditioning, pix2pix training"
+requires-python = ">=3.12,<3.13"
+dependencies = [
+    "torch>=2.7",
+    "torchvision",
+    "diffusers>=0.35",
+    "transformers>=4.51",
+    "accelerate",
+    "sentencepiece",
+    "ftfy",
+    "mediapipe>=0.10.21",
+    "opencv-python-headless",
+    "pillow",
+    "numpy",
+    "imageio[ffmpeg]",
+    "huggingface-hub",
+    "tqdm",
+    "onnx",
+    "onnxruntime",
+]
+
+[tool.uv]
+package = false
+
+[tool.uv.sources]
+torch = [{ index = "pytorch-cu128" }]
+torchvision = [{ index = "pytorch-cu128" }]
+
+[[tool.uv.index]]
+name = "pytorch-cu128"
+url = "https://download.pytorch.org/whl/cu128"
+explicit = true
