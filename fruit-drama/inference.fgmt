@@ -1,0 +1,194 @@
+{
+  "version": 6,
+  "nodes": [
+    {
+      "id": 1,
+      "name": "Webcam Image",
+      "type": "image.webcamImage",
+      "x": 100,
+      "y": 100,
+      "values": {
+        "mirror": {
+          "type": "value",
+          "value": true
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Crop",
+      "type": "image.crop",
+      "x": 300,
+      "y": 100,
+      "values": {
+        "width": {
+          "type": "value",
+          "value": 480
+        },
+        "height": {
+          "type": "value",
+          "value": 720
+        }
+      }
+    },
+    {
+      "id": 3,
+      "name": "Resize",
+      "type": "image.resize",
+      "x": 500,
+      "y": 100,
+      "values": {
+        "width": {
+          "type": "value",
+          "value": 512
+        },
+        "height": {
+          "type": "value",
+          "value": 768
+        },
+        "fit": {
+          "type": "value",
+          "value": "fill"
+        }
+      }
+    },
+    {
+      "id": 4,
+      "name": "Detect Pose",
+      "type": "ml.detectPose",
+      "x": 700,
+      "y": 40,
+      "values": {
+        "number of poses": {
+          "type": "value",
+          "value": 1
+        },
+        "model": {
+          "type": "value",
+          "value": "heavy"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "Detect Faces",
+      "type": "ml.detectFaces",
+      "x": 700,
+      "y": 200,
+      "values": {
+        "number of faces": {
+          "type": "value",
+          "value": 1
+        }
+      }
+    },
+    {
+      "id": 6,
+      "name": "Composite",
+      "type": "image.composite",
+      "x": 900,
+      "y": 100,
+      "values": {
+        "factor": {
+          "type": "value",
+          "value": 1
+        },
+        "operation": {
+          "type": "value",
+          "value": "lighten"
+        }
+      }
+    },
+    {
+      "id": 7,
+      "name": "ONNX Image Model",
+      "type": "ml.onnxImageModel",
+      "x": 1100,
+      "y": 100,
+      "values": {
+        "model": {
+          "type": "value",
+          "value": "generator.onnx"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "Stack",
+      "type": "image.stack",
+      "x": 1300,
+      "y": 160,
+      "values": {}
+    },
+    {
+      "id": 9,
+      "name": "Out",
+      "type": "core.out",
+      "x": 1500,
+      "y": 160,
+      "values": {}
+    }
+  ],
+  "connections": [
+    {
+      "outNode": 1,
+      "outPort": "image",
+      "inNode": 2,
+      "inPort": "in"
+    },
+    {
+      "outNode": 2,
+      "outPort": "out",
+      "inNode": 3,
+      "inPort": "in"
+    },
+    {
+      "outNode": 3,
+      "outPort": "out",
+      "inNode": 4,
+      "inPort": "in"
+    },
+    {
+      "outNode": 3,
+      "outPort": "out",
+      "inNode": 5,
+      "inPort": "in"
+    },
+    {
+      "outNode": 4,
+      "outPort": "out",
+      "inNode": 6,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 5,
+      "outPort": "out",
+      "inNode": 6,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 6,
+      "outPort": "out",
+      "inNode": 7,
+      "inPort": "in"
+    },
+    {
+      "outNode": 6,
+      "outPort": "out",
+      "inNode": 8,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 7,
+      "outPort": "out",
+      "inNode": 8,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 8,
+      "outPort": "out",
+      "inNode": 9,
+      "inPort": "in"
+    }
+  ]
+}

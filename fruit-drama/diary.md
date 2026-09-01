@@ -98,3 +98,17 @@ Consequences:
   Detection runs at ~20 fps on CPU.
 - Started pix2pix training on the apple-CEO pairs while the Wan model
   downloads. This validates the whole chain end to end.
+
+## 2026-09-01 13:00 — Download stalled; Wi-Fi is not the whole story
+
+- Correction to the earlier note: `iwconfig` shows the Wi-Fi link at 400 Mb/s,
+  signal −51 dBm, quality 59/70. The radio is fine. The ~3 MB/s ceiling is
+  upstream of the box (router or ISP). A cable may not change it.
+- The HF download process died once and, after restart, wrote 0 bytes for
+  minutes while holding three `.incomplete` blobs open. The client uses the
+  Xet chunk protocol (`~/.cache/huggingface/xet/logs`). Restarted with
+  `HF_HUB_DISABLE_XET=1` to force plain HTTPS from the CDN.
+- Meanwhile: training on the 603 apple-CEO pairs continues (~12 s/epoch).
+  Wrote `scripts/check_onnx.py` (runs the exported ONNX with onnxruntime,
+  prints the input shape Figment will read) and `inference.fgmt` (webcam →
+  crop 2:3 → resize 512×768 → pose + face → lighten → ONNX → out).
