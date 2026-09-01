@@ -206,3 +206,10 @@ about an hour behind those labels. From here on, box time.
   50, 40 … frames → **6 control clips** of 81 frames in `media/control/`.
 - Real webcam driving videos from students will give hundreds of these.
   The 6 are enough to test whether VACE follows our skeleton style.
+
+![Six frames of a control clip cut from fruit-footage skeletons](diary/09_control_clip_strip.jpg)
+
+The strip settles it: skeletons detected on fruit footage are not usable as
+guidance. Tiny, mangled, sometimes a background human, sometimes sideways.
+Removed the cartoon control clips; the VACE step now waits for human driving
+videos in `media/driving/` (`scripts/box/driving_to_control.sh`).

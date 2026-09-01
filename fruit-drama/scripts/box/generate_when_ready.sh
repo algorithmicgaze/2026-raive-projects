@@ -18,10 +18,14 @@ uv run scripts/make_jobs.py t2v
 log "batch jobs_scenes_t2v.json"
 uv run scripts/generate_clips.py batch jobs_scenes_t2v.json || log "batch t2v FAILED"
 uv run scripts/make_jobs.py i2v
-until grep -q "VACE download done" media/download_vace.log 2>/dev/null; do log "waiting for VACE download"; sleep 60; done
-uv run scripts/make_jobs.py vace 1
-log "batch jobs_vace.json"
-uv run scripts/generate_vace.py batch jobs_vace.json || log "batch vace FAILED"
+if ls media/control/*.mp4 >/dev/null 2>&1; then
+  until grep -q "VACE download done" media/download_vace.log 2>/dev/null; do log "waiting for VACE download"; sleep 60; done
+  uv run scripts/make_jobs.py vace 1
+  log "batch jobs_vace.json"
+  uv run scripts/generate_vace.py batch jobs_vace.json || log "batch vace FAILED"
+else
+  log "no control clips in media/control, skipping VACE (add human videos to media/driving, run scripts/box/driving_to_control.sh)"
+fi
 for jobs in jobs_scenes_i2v.json jobs_pineapple_i2v.json; do
   log "batch $jobs"
   uv run scripts/generate_clips.py batch "$jobs" || log "batch $jobs FAILED"
