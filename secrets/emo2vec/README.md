@@ -90,8 +90,9 @@ point `@model` at it.
 `./max/package.sh` assembles the distributable package in `emotion2vec-max/`
 (externals, model, help, package-info, README), signs the external with the
 Developer ID Application identity in the keychain (hardened runtime,
-timestamp) and zips it. `NOTARY_PROFILE=<notarytool keychain profile>`
-notarizes the zip and staples the ticket to the external.
+timestamp) and zips it. With a `max/.env` it also notarizes the zip and
+staples the ticket to the external. `max/setup-secrets.sh` writes `.env`
+from `.env.template`, resolving the `op://` reference through 1Password.
 
 `max/build/emo_test model.mlmodelc file.wav` classifies a 16-bit mono wav
 without Max, for checking the core.

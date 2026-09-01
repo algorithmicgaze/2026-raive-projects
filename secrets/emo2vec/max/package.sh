@@ -3,10 +3,16 @@
 #
 # Signs the external with the Developer ID Application identity in the keychain
 # (hardened runtime, timestamp). Set SIGN_IDENTITY to pick one, or SIGN_IDENTITY=-
-# for an ad-hoc signature. Set NOTARY_PROFILE to a notarytool keychain profile
-# to notarize the zip and staple the ticket to the external.
+# for an ad-hoc signature. With a .env (see setup-secrets.sh) the zip is
+# notarized and the ticket stapled to the external.
 set -euo pipefail
 cd "$(dirname "$0")"
+
+if [[ -f .env ]]; then
+  set -a
+  source .env
+  set +a
+fi
 
 OUT=../emotion2vec-max
 for f in "externals/emotion2vec~.mxo" models/emotion2vec.mlmodelc "help/emotion2vec~.maxhelp" package-info.json; do
@@ -67,8 +73,9 @@ zip_package() {
 }
 zip_package
 
-if [[ -n "${NOTARY_PROFILE:-}" ]]; then
-  xcrun notarytool submit "$OUT.zip" --keychain-profile "$NOTARY_PROFILE" --wait
+if [[ -n "${NOTARY_PASSWORD:-}" ]]; then
+  xcrun notarytool submit "$OUT.zip" --apple-id "$NOTARY_APPLE_ID" --team-id "$NOTARY_TEAM_ID" \
+    --password "$NOTARY_PASSWORD" --wait
   xcrun stapler staple "$EXTERN"
   zip_package
   echo "notarized and stapled"
