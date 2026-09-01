@@ -36,9 +36,9 @@ Requirements: Max 9, macOS 14 or later, Apple Silicon.
 ## Install
 
 1. Copy this folder to `~/Documents/Max 9/Packages/emotion2vec`.
-2. If you downloaded this package, clear the quarantine flag once:
-   `xattr -dr com.apple.quarantine ~/Documents/Max\ 9/Packages/emotion2vec`
-3. Restart Max and open `help/emotion2vec~.maxhelp`.
+2. Restart Max and open `help/emotion2vec~.maxhelp`.
+
+The external is signed with a Developer ID and notarized.
 
 ## Object
 
