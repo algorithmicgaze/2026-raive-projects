@@ -213,3 +213,14 @@ The strip settles it: skeletons detected on fruit footage are not usable as
 guidance. Tiny, mangled, sometimes a background human, sometimes sideways.
 Removed the cartoon control clips; the VACE step now waits for human driving
 videos in `media/driving/` (`scripts/box/driving_to_control.sh`).
+
+## 2026-09-01 13:00 (box time) — pix2pixHD ONNX: it loads, it is heavy
+
+- `generator_epoch_10.onnx` loads in onnxruntime. Ops: Conv, ConvTranspose,
+  InstanceNormalization, Pad (reflect), Relu, Tanh + shape plumbing. All
+  supported by onnxruntime-web WebGPU.
+- Size **730 MB** fp32 (U-Net: 218 MB). CPU inference 1257 ms (U-Net: 149 ms),
+  so roughly 8× the compute. In Figment expect single-digit fps at 512×768
+  where the U-Net does 30. Options if HD wins on quality: export fp16 (half the
+  size), or `--n-blocks 6` / ngf 32 for a lighter generator. Decide after
+  comparing samples at epoch 40–60.
