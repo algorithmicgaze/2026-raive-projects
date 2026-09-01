@@ -7,7 +7,7 @@ set -uo pipefail
 cd "$(dirname "$0")/../.."
 log() { echo "$(date +%H:%M:%S) $*"; }
 log "uptime: $(uptime -p)"
-D="$HOME/.cache/huggingface/hub/models--yetter-ai--Wan2.2-TI2V-5B-Turbo-Diffusers"
+D="${HF_HOME:-$HOME/.cache/huggingface}/hub/models--yetter-ai--Wan2.2-TI2V-5B-Turbo-Diffusers"
 if ls "$D"/snapshots/*/model_index.json >/dev/null 2>&1 && ! ls "$D"/blobs/*.incomplete >/dev/null 2>&1; then
   log "turbo model complete"
 elif pgrep -f "[h]f download.*Turbo" >/dev/null; then

@@ -63,10 +63,12 @@ def i2v_jobs():
 
 
 def vace_jobs(per_scene=1):
-    """Skeleton-driven clips: each scene's reference image + a control clip."""
-    controls = sorted((ROOT / "media" / "control").glob("*.mp4"))
+    """Skeleton-driven clips: each scene's reference image + an OpenPose control
+    clip (media/control_dw). The landmarks for the pairs are the MediaPipe
+    landmarks of the same source frames (media/control/<clip>.landmarks.jsonl)."""
+    controls = sorted((ROOT / "media" / "control_dw").glob("*.mp4"))
     if not controls:
-        print("no control clips in media/control", file=sys.stderr)
+        print("no OpenPose control clips in media/control_dw (run scripts/box/driving_to_control.sh)", file=sys.stderr)
         return []
     fallback = ROOT / "media" / "refs" / "pineapple_mom.png"
     jobs = []
@@ -80,7 +82,7 @@ def vace_jobs(per_scene=1):
                 "scene": s["id"], "background": s["color"], "seed": 2000 + 10 * i + k,
                 "image": str(ref.relative_to(ROOT)),
                 "control": str(control.relative_to(ROOT)),
-                "landmarks": str(control.with_suffix(".landmarks.jsonl").relative_to(ROOT)),
+                "landmarks": f"media/control/{control.stem}.landmarks.jsonl",
                 "out": f"media/clips_vace/{s['id']}__{control.stem}.mp4",
                 "prompt": prompt_for(s),
             })

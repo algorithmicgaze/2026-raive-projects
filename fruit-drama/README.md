@@ -10,11 +10,13 @@ this directory on that box.
 
 | Script | What it does |
 | --- | --- |
-| `scripts/generate_clips.py` | Wan 2.2 TI2V-5B Turbo, text-to-video or image-to-video, single job or a `jobs_*.json` batch. Output 768×1280, 121 frames, 24 fps. |
+| `scripts/generate_clips.py` | Wan 2.2 TI2V-5B Turbo, text-to-video or image-to-video, single job or a `jobs_*.json` batch. Output 704×1280, 121 frames, 24 fps. |
 | `scripts/render_conditioning.py` | MediaPipe pose + face drawn the way Figment draws them. Writes `[target \| input]` pairs, a per-frame CSV and a stats JSON. |
 | `scripts/train_pix2pix.py` | pix2pix (CCM recipe from `figmentapp/pix2pix`) on a pairs folder. Exports ONNX at each snapshot. |
 | `scripts/check_onnx.py` | Runs an exported ONNX with onnxruntime. Prints the input shape Figment reads. |
 | `scripts/box/restart_download.sh` | Restarts the model download. Xet disabled: it stalls on this network. |
+| `scripts/video_to_openpose.py` | OpenPose detector render of the human frames of a control clip. VACE follows this drawing, not ours. |
+| `scripts/box/runpod_setup.sh` | Fresh RunPod pod: env, clone, `uv sync`, task files, both Wan models. `ssh runpod-4090 'bash -s' < scripts/box/runpod_setup.sh` |
 | `scripts/box/generate_when_ready.sh` | Waits for the model and a free GPU, then runs all job lists. |
 | `scripts/box/pipeline_after_generation.sh` | Waits for the clips, builds `media/dataset_pineapple`, trains a model. |
 
@@ -57,7 +59,7 @@ Put videos of one person moving (full body, facing the camera) in
 `media/driving/` on the box, then:
 
 ```bash
-bash scripts/box/driving_to_control.sh      # landmarks + 81-frame control clips
+bash scripts/box/driving_to_control.sh      # MediaPipe landmarks, 81-frame clips, OpenPose control clips
 uv run scripts/make_jobs.py vace 2          # 2 control clips per scene
 uv run scripts/generate_vace.py batch jobs_vace.json
 uv run scripts/build_pairs.py media/dataset_vace jobs_vace.json   # exact pairs, no detection

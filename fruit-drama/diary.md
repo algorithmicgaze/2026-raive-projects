@@ -238,3 +238,215 @@ videos in `media/driving/` (`scripts/box/driving_to_control.sh`).
   and `uv run scripts/train_pix2pixhd.py media/dataset_apple_ceo/pairs media/train_apple_ceo_hd --epochs 60 --batch-size 4 --snapshot-interval 10`
   resumes from the last snapshot.
 - A watcher on the Mac retries SSH every minute.
+
+## 2026-09-01 13:20 (RunPod time, UTC) — Second box: RunPod 4090
+
+The Tailscale box stayed offline, so the Wan generation moved to a RunPod pod
+(RTX 4090 24 GB, 12 vCPU, 31 GB RAM limit, 50 GB `/workspace` volume). Setup
+notes in `CLAUDE.md`; one-shot bootstrap in `scripts/box/runpod_setup.sh`.
+
+- The link is fast: Turbo (22 GB) and VACE (3.5 GB) downloaded in about two
+  minutes with Xet. The `HF_HUB_DISABLE_XET=1` rule is for the Tailscale box.
+- Trap 1: direct `sshd` sessions do not get the container env. `HF_HOME` was
+  unset, so the models landed on the 30 GB ephemeral `/` (97 % full). Moved to
+  `/workspace/.cache`; `/workspace/env.sh` sets the env for every session.
+- Trap 2: the 31 GB cgroup limit. With `enable_model_cpu_offload` the text
+  encoder (11 GB) and transformer (10 GB) sit in RAM: 23 GB RSS plus page
+  cache hit the limit and the kernel killed the batch on the second clip, twice
+  (`oom_kill 2` in `memory.oom_control`, no traceback in the log).
+- Fix in `generate_clips.py`: encode all prompts of the batch first, free the
+  text encoder, then run transformer + VAE on the GPU with no offload. RSS
+  1.4 GB, VRAM peak 20 GB, and a clip takes **60 s instead of 109 s**. Also
+  `--skip-existing` so a killed batch resumes.
+- Note: with `guidance_scale=1.0` (Turbo, no CFG) the negative prompt has no
+  effect. It stays in the script for a future model with CFG.
+- Clip 1 (`pineapple_hallway_ref.mp4`) looks right: one character, full body,
+  frontal, big gestures, marble hallway.
+
+![First RunPod clip: pineapple woman in the hotel hallway](diary/11_runpod_hallway_strip.jpg)
+
+Running: the 12 reference clips, then 48 i2v motion clips (~50 min). Clips
+rsync to the Mac's `media/clips/`. VACE waits for the human driving video.
+
+## 2026-09-01 15:35 (box time) — Box back, HD finished, generation running
+
+- The box had **rebooted** (uptime 1 min when SSH returned). pix2pixHD had
+  already finished: 60 epochs, `media/train_apple_ceo_hd/generator_epoch_60.onnx`.
+- The Turbo download was complete (`✓ Downloaded`, all shards present) but 16
+  stale `.incomplete` blobs from the killed Xet attempts kept the waiters
+  waiting. Deleted them. Generation started within a minute: 19.3 GB VRAM,
+  first reference clip rendering.
+
+![pix2pixHD epoch 60: input, generated, target](diary/11_hd_sample_epoch60.jpg)
+
+![pix2pixHD epoch 60 ONNX check](diary/12_hd_onnx_epoch60.jpg)
+
+pix2pixHD at epoch 60 versus the U-Net at epoch 60: the crying apples are
+individual characters, the pineapple + apple boy scene has readable faces and
+a background. The U-Net gave smears there. ONNX inference 734 ms on CPU
+(U-Net 149 ms). Quality wins by a wide margin; speed costs ~5×.
+
+## 2026-09-01 15:45 (box time) — First generated scene
+
+![pineapple_hallway reference clip, 5 frames](diary/13_gen_pineapple_hallway_strip.jpg)
+
+![Same clip with MediaPipe pose drawn on it](diary/14_gen_pineapple_hallway_overlay.jpg)
+
+`pineapple_hallway_ref.mp4`: 768×1280, 121 frames, 77 s to generate. One
+character, full body, frontal, gesturing, identity stable across the clip.
+Pose found on 12 of 13 sampled frames and it lands on body, hands and feet.
+Face contour: 0 of 13. The face landmarker does not accept a pineapple head.
+The pose skeleton's own head points (eyes, nose, ears, mouth corners) still
+give the model the head position and turn. Human driving videos through VACE
+will add real face contours later.
+
+## 2026-09-01 13:50 (RunPod time) — Confetti artefact: model, not script
+
+Some Turbo clips (apple CEO office, avocado doctor) show colored fragments over
+the whole frame, like lead-glass windows. Others (pineapple hallway, broccoli)
+are clean. Suspect one: the new `generate_clips.py` (prompt embeddings computed
+outside the pipeline). A/B on the same seed: old script vs new script give
+pixel-identical clips, artefacts included. Not the script.
+
+What it is: unconverged latents. The Wan VAE compresses 16× spatially, so one
+noisy latent cell decodes to a ~16 px blob, the fragment size we see. Two
+likely drivers for the 4-step Turbo: our 768×1280 is off the recommended
+704×1280 grid, and 4 steps is thin for busy scenes. A sweep runs after VACE:
+704×1280, 6 and 8 steps.
+
+![A/B: old script, new script (identical), avocado doctor with artefacts](diary/12_confetti_ab.jpg)
+
+Also: the old script (CPU offload) dies on its second clip on the 31 GB box
+every time (`oom_kill 3`). Control clips: 95 × 81 frames cut from the
+`myrthe-ai-control` skeleton (23,106 frames at 50 fps, stride 3). First VACE
+batch: 12 scenes × 1 control clip, ~5.5 min per clip with offload
+(`--no-offload` runs out of VRAM in the fp32 VAE).
+
+## 2026-09-01 15:50 (box time) — The roster: 12 reference scenes
+
+![Frame 60 of each of the 12 reference clips](diary/15_roster.jpg)
+
+Detection on every 10th frame (13 frames per clip):
+
+| scene | pose | face | look |
+| --- | --- | --- | --- |
+| apple_boy_school | 9 | 12 | clean |
+| apple_ceo_office | 11 | 0 | **confetti**, character became a human with a leaf |
+| avocado_doctor | 2 | 0 | **confetti**, pose lost in the white coat |
+| banana_kitchen | 13 | 8 | clean |
+| broccoli_penthouse | 10 | 0 | light speckle |
+| cherry_gate_rain | 13 | 6 | clean (rain reads as rain) |
+| grape_courtroom | 10 | 1 | sparkle overlay |
+| lemon_hospital | 12 | 4 | clean |
+| orange_waiter | 7 | 0 | sparkle overlay |
+| pineapple_hallway | 12 | 0 | clean |
+| strawberry_bedroom | 13 | 13 | clean, human-like face |
+| watermelon_police | 13 | 3 | clean, faint sparkles behind |
+
+Reading:
+- 8 of 12 scenes are usable as they are. Pose detection works on generated
+  fruit characters when the shot is single, frontal, full body.
+- Face detection depends on how human the face is: strawberry 13/13, apple
+  boy 12/13, pineapple 0/13.
+- The **confetti** scenes share sparkle-heavy light words in the prompt
+  (glass walls, city view, monitors, harsh overhead light, golden hour with
+  candles) on top of the style suffix "glossy skin, cinematic lighting, high
+  detail". With 4 steps and no CFG, a texture prior like that spreads over the
+  whole frame. The RunPod clip with the same seed is pixel-identical, so this
+  is prompt + seed, not hardware.
+- A/B queued after the motion batch (`jobs_ab_apple_ceo.json`): new seed,
+  reworded character, 6 steps, and a soft style suffix ("soft studio lighting,
+  clean smooth render, simple background") for apple CEO and avocado.
+
+## 2026-09-01 15:58 (box time) — Human skeleton data arrived
+
+`skeletons/myrthe-ai-control_skeleton.jsonl`: 39,328 frames at 50 fps
+(13 min), one person, Figment Detect Pose (heavy) export, 33 landmarks with
+visibility, 1024×1024, pose only. Exactly what a student's live Figment
+network emits, so training input and inference input match.
+
+![Six frames of control clip myrthe_010](diary/16_myrthe_control_strip.jpg)
+
+- `scripts/import_figment_skeleton.py` remaps the landmarks through a 2:3
+  center crop (38,972 frames kept, 356 dropped for missing landmarks).
+- `make_control_clips.py --stride 3` (50 → 16.7 fps) cut **160 control clips**
+  of 81 frames into `media/control/`.
+- The post-generation pipeline now runs VACE after the A/B: 2 control clips
+  per scene (24 clips, ~1 h), reference image = each scene's first frame,
+  exact pairs from the stored landmarks. Then pairs for everything, then
+  pix2pix and pix2pixHD.
+- The RunPod session has an uncommitted `make_control_clips.py` that reads the
+  Figment format directly and renders OpenPose-style colored limbs (the format
+  VACE was trained on). When it lands, OpenPose vs MediaPipe control style is
+  the next A/B.
+
+Timeline on the 4090: motion clips until ~16:45, A/B ~16:52, VACE until
+~17:50, pairs + two trainings until ~19:30.
+
+## 2026-09-01 14:00 (RunPod time) — Fragments come from the resolution
+
+Sweep on the apple-CEO prompt, same seed: 768×1280 at 4, 6 and 8 steps all
+keep the fragments; 704×1280 at 4 and at 8 steps are clean. The Turbo model
+was distilled on the 704×1280 grid only. More steps do not repair an off-grid
+size. `generate_clips.py` now defaults to 704×1280; the 768 clips moved to
+`media/clips_768/` and every Turbo clip is regenerated (12 refs + 48 motion
+clips, about 1 h).
+
+![Rows: 768/4, 704/4, 768/6, 768/8, 704/8 steps](diary/13_resolution_sweep.jpg)
+
+Consequence for pairs: 704×1280 is 0.55; the training size 512×768 is 0.667.
+The 2:3 center-crop drops 8.75 % top and bottom. Prompts ask for head-to-feet
+framing with margin, so most frames survive; `build_pairs.py` skips the rest.
+
+VACE with our white MediaPipe lines: clean character, right scene, pose
+ignored (arms stay down while the skeleton raises them; medium shot instead of
+full body). `make_control_clips.py --style openpose` renders the OpenPose body
+(18 joints, standard colors) from the same landmarks. Test running.
+
+## 2026-09-01 14:20 (RunPod time) — VACE ignores our skeletons
+
+Same control clip (`myrthe_000`, 81 frames), pineapple-hallway reference,
+four runs. In every one the character stands with the arms down while the
+skeleton raises an arm and lifts a knee. Framing stays a medium shot.
+
+| Control render | Reference | `conditioning_scale` | Follows pose |
+| --- | --- | --- | --- |
+| MediaPipe white lines | yes | 1.0 | no |
+| OpenPose colors (18 joints from MediaPipe) | yes | 1.0 | no |
+| OpenPose colors | no | 1.0 | no (identity lost: a human woman) |
+| OpenPose colors | yes | 1.5 | no, oversaturated |
+
+![OpenPose-style control (top) and the VACE output (bottom)](diary/14_vace_openpose_ignored.jpg)
+
+The diffusers docs confirm the call (`video=` control frames, `reference_images=`,
+no mask) is the canonical pose task, so the plumbing is right. Open question:
+does VACE read our synthetic drawing as a pose at all? Test: run the real
+OpenPose detector (`controlnet_aux`, body + hands + face) on the original
+human video (`scripts/video_to_openpose.py`, 1024×1024 at 50 fps, 39,328
+frames) and feed that. If this follows the pose, the gap is our render. If not,
+VACE 1.3B is the wrong tool here; Wan 2.2 Animate (14B, character image +
+pose video, needs a bigger GPU) is the next candidate.
+
+## 2026-09-01 14:30 (RunPod time) — VACE follows the OpenPose detector drawing
+
+`controlnet_aux.OpenposeDetector` (body + hands + face) on 81 frames of the
+original human video (`media/driving/myrthe-ai-control.mp4`, 1024×1024,
+50 fps, stride 3), same reference image and prompt: the pineapple woman dances
+with the skeleton, arm up, lean, leg lift, frame by frame.
+
+![OpenPose detector control (top), VACE output (bottom)](diary/15_vace_openpose_detector_follows.jpg)
+
+So VACE wants the detector's own drawing. Our renders from MediaPipe landmarks
+(white lines, or OpenPose colors) it does not read as a pose. Pipeline now:
+
+- `make_control_clips.py` cuts the MediaPipe landmark clips (for the pairs).
+- `video_to_openpose.py --landmarks <clip>.landmarks.jsonl` renders the
+  OpenPose control for exactly those source frames (`media/control_dw/`).
+- `make_jobs.py vace` pairs each scene with a `control_dw` clip and the
+  matching `control` landmarks. `build_pairs.py` is unchanged.
+- `driving_to_control.sh` runs all of it.
+
+Cost: the detector takes about 4 min per 81-frame clip (hands + face,
+mostly CPU). `--no-hand-face` is the lever if that matters; test whether the
+face dots help the fruit faces first. Running: OpenPose renders for 12 control
+clips, then one VACE clip per scene (~1 h GPU) after the 704 regeneration.

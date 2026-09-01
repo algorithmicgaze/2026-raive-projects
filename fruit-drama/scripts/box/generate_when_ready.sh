@@ -5,7 +5,7 @@
 #   3. four motion clips per scene from the reference frame (i2v)
 set -euo pipefail
 cd "$(dirname "$0")/../.."
-D="$HOME/.cache/huggingface/hub/models--yetter-ai--Wan2.2-TI2V-5B-Turbo-Diffusers"
+D="${HF_HOME:-$HOME/.cache/huggingface}/hub/models--yetter-ai--Wan2.2-TI2V-5B-Turbo-Diffusers"
 log() { echo "$(date +%H:%M:%S) $*"; }
 log "waiting for model download"
 until ls "$D"/snapshots/*/model_index.json >/dev/null 2>&1 \

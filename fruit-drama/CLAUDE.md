@@ -30,6 +30,24 @@ cd /home/codespace/Work/2026-raive-projects/fruit-drama
   Do not `scp` source files.
 - Keep large downloads (HF models) in `~/.cache/huggingface`, not in the repo.
 
+## RunPod box (fallback when the 4090 box is offline)
+
+```
+ssh runpod-4090          # alias in ~/.ssh/config: root@47.47.180.47 -p 19754
+cd /workspace/2026-raive-projects/fruit-drama
+```
+
+- RTX 4090 24 GB, CUDA 12.8, 12 vCPU, 31 GB RAM limit, Ubuntu 24.04.
+- Use the direct TCP port for commands, `scp` and `rsync`. The
+  `ssh.runpod.io` proxy only opens an interactive shell.
+- `/workspace` (50 GB) persists; `/` (30 GB) is wiped when the pod restarts.
+  Repo, models (`HF_HOME`) and the uv cache live on `/workspace`.
+- Direct SSH sessions do not get the container env. `/workspace/env.sh`
+  (sourced from `.bashrc`) sets `HF_HOME`, `UV_CACHE_DIR` and the CUDA paths.
+  Fresh pod: `ssh runpod-4090 'bash -s' < scripts/box/runpod_setup.sh`.
+- Fast network: models download in minutes, Xet works. The clock is UTC.
+- The pod IP and port change when the pod is recreated. Update the alias.
+
 ## Conventions
 
 - Python: `uv run`, never bare `python`. Use PEP 723 inline metadata for
