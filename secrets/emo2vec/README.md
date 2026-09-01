@@ -87,5 +87,8 @@ uv run convert.py ../models/emotion2vec.mlmodelc --seconds 3
 A model converted with another `--seconds` changes the analysis window;
 point `@model` at it.
 
+`./max/package.sh` assembles the distributable package in `emotion2vec-max/`
+(externals, model, help, package-info, README) and zips it.
+
 `max/build/emo_test model.mlmodelc file.wav` classifies a 16-bit mono wav
 without Max, for checking the core.

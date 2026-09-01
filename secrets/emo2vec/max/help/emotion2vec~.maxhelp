@@ -109,7 +109,7 @@
     "box": {
      "id": "obj-mmodel",
      "maxclass": "message",
-     "text": "model /path/to/emotion2vec_plus_base.onnx",
+     "text": "model /path/to/other.mlmodelc",
      "numinlets": 2,
      "numoutlets": 1,
      "outlettype": [
@@ -118,7 +118,7 @@
      "patching_rect": [
       350,
       100,
-      266.5,
+      188.5,
       22
      ]
     }
