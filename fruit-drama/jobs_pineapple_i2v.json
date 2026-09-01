@@ -1,0 +1,18 @@
+[
+  {"mode": "i2v", "image": "media/refs/pineapple_mom.png", "out": "media/clips/pineapple_01.mp4", "seed": 21,
+   "prompt": "A tall pineapple woman in an emerald evening gown and pearl necklace stands in a grand marble hallway. She gasps, raises her hand to her chest, and takes one step back. Full body visible, facing the camera."},
+  {"mode": "i2v", "image": "media/refs/pineapple_mom.png", "out": "media/clips/pineapple_02.mp4", "seed": 22,
+   "prompt": "A tall pineapple woman in an emerald evening gown points accusingly at the camera, then lowers her arm and shakes her head slowly. Full body visible, facing the camera."},
+  {"mode": "i2v", "image": "media/refs/pineapple_mom.png", "out": "media/clips/pineapple_03.mp4", "seed": 23,
+   "prompt": "A tall pineapple woman in an emerald evening gown covers her mouth with both hands, eyes wide, then lowers her hands and lifts her chin. Full body visible, facing the camera."},
+  {"mode": "i2v", "image": "media/refs/pineapple_mom.png", "out": "media/clips/pineapple_04.mp4", "seed": 24,
+   "prompt": "A tall pineapple woman in an emerald evening gown crosses her arms, taps her foot and glares, then turns her head to the left. Full body visible, facing the camera."},
+  {"mode": "i2v", "image": "media/refs/pineapple_mom.png", "out": "media/clips/pineapple_05.mp4", "seed": 25,
+   "prompt": "A tall pineapple woman in an emerald evening gown wipes a tear with the back of her hand, sniffs, and straightens her posture. Full body visible, facing the camera."},
+  {"mode": "i2v", "image": "media/refs/pineapple_mom.png", "out": "media/clips/pineapple_06.mp4", "seed": 26,
+   "prompt": "A tall pineapple woman in an emerald evening gown raises both hands in shock, then puts one hand on her hip and leans forward, scolding. Full body visible, facing the camera."},
+  {"mode": "i2v", "image": "media/refs/pineapple_mom.png", "out": "media/clips/pineapple_07.mp4", "seed": 27,
+   "prompt": "A tall pineapple woman in an emerald evening gown walks two steps toward the camera, stops, and puts a hand on her chest, worried. Full body visible."},
+  {"mode": "i2v", "image": "media/refs/pineapple_mom.png", "out": "media/clips/pineapple_08.mp4", "seed": 28,
+   "prompt": "A tall pineapple woman in an emerald evening gown waves her arms dramatically while talking, then folds her hands and looks down, sad. Full body visible, facing the camera."}
+]

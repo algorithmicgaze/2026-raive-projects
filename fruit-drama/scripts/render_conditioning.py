@@ -142,6 +142,8 @@ def main():
 
     pose, face = make_detectors(args.pose_model, args.num_poses, args.num_faces, args.confidence)
     stats = {"frames": 0, "with_pose": 0, "with_face": 0, "with_both": 0, "written": 0}
+    per_frame = open(args.out / f"{args.prefix or 'frames'}.csv", "w")
+    per_frame.write("name,poses,faces\n")
 
     for name, rgb in tqdm(iter_frames(args.source, args.step), desc=args.source.name):
         if size:
@@ -151,6 +153,7 @@ def main():
         stats["with_pose"] += n_pose > 0
         stats["with_face"] += n_face > 0
         stats["with_both"] += n_pose > 0 and n_face > 0
+        per_frame.write(f"{name},{n_pose},{n_face}\n")
         if args.skip_empty and n_pose == 0:
             continue
         target, inp = rgb, cond
@@ -165,6 +168,7 @@ def main():
             ov = np.maximum(rgb, cond)
             cv2.imwrite(str(args.out / "overlay" / out_name), cv2.cvtColor(ov, cv2.COLOR_RGB2BGR))
 
+    per_frame.close()
     (args.out / f"{args.prefix or 'stats'}.json").write_text(json.dumps(stats, indent=2))
     print(json.dumps(stats), file=sys.stderr)
 

@@ -72,3 +72,29 @@ The pix2pix U-Net has 8 down-samplings, so width and height must divide by
   every 3rd frame, at 512×768.
 - Diary is also published as a phone-readable page:
   https://claude.ai/code/artifact/d0a973f2-34c6-4124-b07f-a2667a01c219
+
+## 2026-09-01 12:30 — First detection results on the apple-CEO video
+
+![Four sampled frames with MediaPipe pose + face drawn over them](diary/01_apple_ceo_overlay.jpg)
+
+Three of the four sampled frames have **no detection at all**. The video is a
+compilation of crowded group shots: seated characters, backs turned, huge
+fruit heads, phones in the foreground. MediaPipe was trained on humans and
+gives up.
+
+![Training pair: pineapple mother scene, source left, conditioning right](diary/02_apple_ceo_pair.jpg)
+
+The pineapple "MOM" scene works: one character, frontal, full body, face
+found. This is the shape every training frame needs.
+
+Consequences:
+- Train only on frames with a pose (`--skip-empty`). The renderer now writes a
+  per-frame CSV (`poses,faces` per frame) so we can curate.
+- Generated clips must be **single character, frontal, full body, medium or
+  wide shot**. Two people at a table will not detect.
+- Saved the pineapple frame as `media/refs/pineapple_mom.png` (768×1280). It is
+  a known-good image-to-video reference.
+- Environment is ready (torch 2.8 + CUDA, diffusers 0.40, MediaPipe 1.0.1).
+  Detection runs at ~20 fps on CPU.
+- Started pix2pix training on the apple-CEO pairs while the Wan model
+  downloads. This validates the whole chain end to end.
