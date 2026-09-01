@@ -194,3 +194,15 @@ about an hour behind those labels. From here on, box time.
   VACE is small. USB only pays off for 14B-class models.
 - Workflow is git now: write here → push → `git pull` on the box →
   `scripts/box/restart_waiters.sh`.
+
+## 2026-09-01 12:55 (box time) — Control clips for VACE
+
+- First cut gave **0** control clips: the longest unbroken pose run in the
+  compilation is 70 frames; VACE needs 81. Scenes cut every 2–3 s and
+  detection drops out in between.
+- `make_control_clips.py` now bridges detection gaps ≤ 6 frames by
+  interpolating landmarks, and extends runs of 41–80 frames by ping-pong
+  (forward, then back: a gesture and its return). Result: runs of 252, 54, 54,
+  50, 40 … frames → **6 control clips** of 81 frames in `media/control/`.
+- Real webcam driving videos from students will give hundreds of these.
+  The 6 are enough to test whether VACE follows our skeleton style.

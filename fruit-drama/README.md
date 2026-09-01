@@ -50,3 +50,15 @@ detect → stack → save). `render_conditioning.py` does the same on the box.
   shot. MediaPipe finds nothing in crowded fruit group shots.
 - Sides must divide by 256 (U-Net with 8 down-samplings). Portrait: 512×768.
 - Crop to 2:3 *before* detection. Do the same crop in Figment.
+
+## Human driving videos
+
+Put videos of one person moving (full body, facing the camera) in
+`media/driving/` on the box, then:
+
+```bash
+bash scripts/box/driving_to_control.sh      # landmarks + 81-frame control clips
+uv run scripts/make_jobs.py vace 2          # 2 control clips per scene
+uv run scripts/generate_vace.py batch jobs_vace.json
+uv run scripts/build_pairs.py media/dataset_vace jobs_vace.json   # exact pairs, no detection
+```
