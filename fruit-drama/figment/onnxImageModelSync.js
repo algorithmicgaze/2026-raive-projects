@@ -1,6 +1,6 @@
 /**
  * @name ONNX Image Model Sync
- * @description ONNX Image Model that waits for the model and each inference while exporting, so every rendered frame is a real inference
+ * @description ONNX Image Model that loads the model inside the frame and, while exporting, waits for each inference: every rendered frame is a real inference
  * @category ml
  */
 
@@ -310,23 +310,18 @@ async function runInference() {
 
 node.onRender = async () => {
   const exporting = window.desktop.getRuntimeMode() === 'export';
+  // Load the model inside the frame, live or exporting: the first frame after
+  // a model change then already has a session, and a headless render finds an
+  // image on the Out node right away.
   if (oldModelFile !== modelFileIn.value) {
     oldModelFile = modelFileIn.value;
-    if (exporting) {
+    isRunning = true;
+    try {
       await loadModel();
-      if (!session) throw new Error(`Could not load ONNX model ${modelFileIn.value}`);
-    } else {
-      isRunning = true;
-      loadModel()
-        .catch((e) => {
-          node.error = e && e.stack ? e.stack : String(e);
-        })
-        .finally(() => {
-          isRunning = false;
-          node._markDirty();
-        });
-      return;
+    } finally {
+      isRunning = false;
     }
+    if (!session) throw new Error(`Could not load ONNX model ${modelFileIn.value}`);
   }
   if (!session || !imageIn.value) return;
   if (imageIn.value.width !== imageWidth || imageIn.value.height !== imageHeight) {
