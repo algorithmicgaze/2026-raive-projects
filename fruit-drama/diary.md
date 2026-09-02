@@ -598,3 +598,10 @@ the main process), 512×768, 30 timed frames after warm-up:
 - fp16 is optional now: HD fp32 already gives 20 fps. If wanted later, the
   device needs `shader-f16` (`figment/figment-shader-f16.patch`) and the
   mixed build (fp32 InstanceNormalization) avoids the gray-frame overflow.
+
+![pix2pixHD epoch 10 on the scenes dataset: input, generated, target](diary/22_hd_scenes_epoch10.jpg)
+
+pix2pixHD, epoch 10, 8,067 pairs. Skeleton + scene color in, character out:
+strawberry girl with headphones (arms up), cherry woman in the rain, avocado
+doctor, lemon man in the corridor. This is the model to put in Figment:
+`media/train_scenes_hd/generator_epoch_10.onnx`, 20 fps at 512×768.
