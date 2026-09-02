@@ -22,7 +22,7 @@ def read(path):
         return ""
 
 
-def parse_log(text):
+def parse_log(text, epoch):
     info = {}
     m = re.search(r"G ([\d.]+)M params, ([\d.]+) GMAC per frame \(channels (\[[^\]]*\])", text)
     if m:
@@ -30,7 +30,7 @@ def parse_log(text):
     times = [float(x) for x in re.findall(r"epoch \d+ done in ([\d.]+) min", text)]
     if times:
         info["epoch_min"] = sum(times) / len(times)
-    losses = re.findall(r"epoch (\d+) iter \d+/\d+ \| d ([\d.]+) .*?adv ([\d.]+) l1 ([\d.]+) vgg ([\d.]+)", text)
+    losses = re.findall(rf"epoch ({epoch}) iter \d+/\d+ \| d ([\d.]+) .*?adv ([\d.]+) l1 ([\d.]+) vgg ([\d.]+)", text)
     if losses:
         info["losses"] = losses[-1]
     for ep, ms in re.findall(r"onnx generator_epoch_(\d+)\.onnx: .*?cpu (\d+) ms", text):
@@ -59,7 +59,7 @@ def main():
     rows = []
     for name in names:
         d = os.path.join(args.exp_dir, name)
-        info = parse_log(read(os.path.join(d, "training_log.txt")))
+        info = parse_log(read(os.path.join(d, "training_log.txt")), e)
         if "params" not in info:
             continue
         flags = read(os.path.join(d, "variant.txt")).strip()
