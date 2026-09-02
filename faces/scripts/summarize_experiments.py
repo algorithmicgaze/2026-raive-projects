@@ -60,14 +60,16 @@ def main():
     for name in names:
         d = os.path.join(args.exp_dir, name)
         info = parse_log(read(os.path.join(d, "training_log.txt")), e)
-        if "params" not in info:
-            continue
         flags = read(os.path.join(d, "variant.txt")).strip()
+        if "params" not in info and not flags:
+            continue
         metrics = {}
-        try:
-            metrics = json.load(open(os.path.join(d, f"eval_epoch_{e}", "metrics.json")))
-        except (OSError, ValueError):
-            pass
+        for eval_dir in (f"eval_epoch_{e}", "eval"):  # "eval": an external baseline such as pix2pix
+            try:
+                metrics = json.load(open(os.path.join(d, eval_dir, "metrics.json")))
+                break
+            except (OSError, ValueError):
+                pass
         bench = {}
         try:
             bench = json.load(open(os.path.join(d, f"bench_epoch_{e}.json")))
@@ -81,7 +83,7 @@ def main():
             f"{loss[3]} / {loss[4]}" if loss else "",
             fmt(metrics.get("l1")), fmt(metrics.get("psnr"), ".2f"), fmt(metrics.get("ssim"), ".4f"),
             fmt(metrics.get("psnr_vs_ref"), ".2f"), fmt(metrics.get("ssim_vs_ref"), ".4f"),
-            fmt(info.get(f"cpu_ms_e{e}"), "d"),
+            fmt(info.get(f"cpu_ms_e{e}", metrics.get("ms_cpu")), ".0f"),
             fmt(bench.get("ms"), ".1f"), fmt(bench.get("fps"), ".1f"),
             fmt(vs_psnr, ".2f"), fmt(vs_ssim, ".4f"),
         ])

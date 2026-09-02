@@ -228,3 +228,24 @@ Measured MACs per variant, all matching the plan's predictions:
 - Queue started 23:12. V0 at 25 min per epoch; the small variants should take
   roughly 60 to 80 min for 4 epochs, the wide ones 100. Expect V1, V3, V8,
   V7, V9 and V1b by morning, the rest during the day.
+
+## 2026-09-03 00:05 (box time) — Second box, queue split
+
+- `codespace-4090` (RTX 4090, `codespace@100.91.215.104`) holds the same
+  dataset under `secrets/faces/` and was finishing the pix2pix notebook
+  (`output/run-01`, resumed run, 24 min per epoch, ONNX up to epoch 94).
+  Stopped its kernel at epoch 98 and gave the GPU to the variants.
+- `scripts/box/run_experiments.sh` takes variant names as arguments. Split:
+  the 3090 Ti keeps V1 (running, 18 min per epoch) then V3, V8, V7, V9, V1b;
+  the 4090 runs V2, V5, V11, V4, V6. A hand-over job on the 3090 Ti restarts
+  its queue with that list the moment V1 is done. V0's eval outputs were
+  copied to the 4090 so its `--ref` numbers use the same reference.
+- `stylegan/bench_variants.sh` pulls from both boxes.
+- **pix2pix baseline on the box-side metrics** (48 pairs, same protocol):
+  the notebook's U-Net at epoch 94 gives L1 0.133, PSNR 19.19, SSIM 0.593.
+  V0 at epoch 4: L1 0.110, PSNR 19.84, SSIM 0.633. The conditional StyleGAN
+  after 1 h 40 min of training beats the U-Net after a day of it on every
+  number, and the eye agrees. The pix2pix ONNX runs in 161 ms on the box CPU
+  against 705 ms for V0, so the U-Net stays the speed reference in Figment;
+  it goes into the Mac bench as the `pix2pix` row (fp32: its InstanceNorm
+  overflows in fp16 on WebGPU).

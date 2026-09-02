@@ -11,20 +11,24 @@
 # branch), bench.mjs in ~/Desktop/pix2pix-research-log/scripts/figment-bench.
 cd "$(dirname "$0")"
 set -u
-BOX=fdb@100.106.183.123
-REMOTE=/home/fdb/Work/2026-raive-projects/secrets/faces/output-exp
+# Both training boxes; the queue is split between them.
+REMOTES=(fdb@100.106.183.123:/home/fdb/Work/2026-raive-projects/secrets/faces/output-exp
+         codespace@100.91.215.104:/home/codespace/Work/2026-raive-projects/secrets/faces/output-exp)
 EPOCH=${EPOCH:-4}
 FRAMES=${FRAMES:-40}
 BENCH_DIR=$HOME/Desktop/pix2pix-research-log/scripts/figment-bench
 FIGMENT=$HOME/Projects/figment/dist/mac-arm64/Figment.app/Contents/MacOS/Figment
 TEMPLATE=three_faces_stylegan_inference.fgmt
 
-echo "=== pull from the box"
-rsync -aL --info=progress2 \
-  --include='*/' --include="generator_epoch_${EPOCH}_fp16.onnx" --include='variant.txt' \
-  --include='training_log.txt' --include='sample_epoch_*.jpg' --include='eval_epoch_*/metrics.json' \
-  --include='eval_epoch_*/sheet.jpg' --include='summary.md' --include='runner.log' --include='dwbench/*_fp16.onnx' \
-  --exclude='*' "$BOX:$REMOTE/" exp/
+echo "=== pull from the boxes"
+for remote in "${REMOTES[@]}"; do
+  rsync -aL --info=progress2 \
+    --include='*/' --include="generator_epoch_${EPOCH}_fp16.onnx" --include='variant.txt' \
+    --include='training_log.txt' --include='sample_epoch_*.jpg' --include='eval_epoch_*/metrics.json' \
+    --include='eval_epoch_*/sheet.jpg' --include='dwbench/*_fp16.onnx' \
+    --include='model.onnx' --include='eval/metrics.json' --include='eval/sheet.jpg' \
+    --exclude='*' "$remote/" exp/ || echo "pull from $remote failed, continuing with what is here"
+done
 
 [ -e "$BENCH_DIR/node_modules" ] || ln -s "$HOME/Projects/figment/node_modules" "$BENCH_DIR/node_modules"
 
@@ -33,6 +37,7 @@ projects=()
 for dir in exp/*/; do
   name=$(basename "$dir")
   model=$dir/generator_epoch_${EPOCH}_fp16.onnx
+  [ -e "$model" ] || model=$dir/model.onnx  # external baseline (pix2pix), one fixed file
   [ -e "$model" ] || continue
   project=exp_${name}_e${EPOCH}.fgmt
   python3 - "$TEMPLATE" "$project" "$model" <<'EOF'

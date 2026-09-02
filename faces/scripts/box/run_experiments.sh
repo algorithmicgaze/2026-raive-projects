@@ -3,11 +3,13 @@
 # power drop: each variant resumes from its newest snapshot, and a variant
 # is skipped once its fp16 ONNX and its eval metrics exist.
 #
-#   nohup setsid scripts/box/run_experiments.sh > /dev/null 2>&1 < /dev/null &
+#   nohup setsid scripts/box/run_experiments.sh [V3 V8 ...] > /dev/null 2>&1 < /dev/null &
 #   tail -f output-exp/runner.log
 #
-# EPOCHS (default 4) is the target epoch per variant. V0 is the reference:
-# a symlink to output-cstylegan, which already has epochs 2 and 4.
+# Variant names as arguments restrict the queue to those (in the given order),
+# so two boxes can split it. EPOCHS (default 4) is the target epoch per
+# variant. V0 is the reference: a symlink to output-cstylegan on the box that
+# trained it, or a copy of its eval folders on another box.
 cd "$(dirname "$0")/../.."
 set -u
 DATA=datasets/three_faces
@@ -22,7 +24,7 @@ if [ -e "$PIDFILE" ] && kill -0 "$(cat "$PIDFILE")" 2>/dev/null; then
   exit 0
 fi
 echo $$ > "$PIDFILE"
-[ -e "$OUT/V0" ] || ln -s ../output-cstylegan "$OUT/V0"
+[ -e "$OUT/V0" ] || [ ! -d output-cstylegan ] || ln -s ../output-cstylegan "$OUT/V0"
 
 # name|flags. Order follows the plan: the channel plan first, then the
 # combined trims, then the single trims and the depthwise candidate last.
@@ -48,6 +50,15 @@ if [ ! -e "$OUT/dwbench/dense_fp16.onnx" ]; then
     uv run stylegan/to_fp16.py "$OUT/dwbench/$m.onnx" "$OUT/dwbench/${m}_fp16.onnx"
   done
 fi
+
+if [ $# -gt 0 ]; then
+  selected=()
+  for want in "$@"; do
+    for entry in "${VARIANTS[@]}"; do [ "${entry%%|*}" = "$want" ] && selected+=("$entry"); done
+  done
+  VARIANTS=("${selected[@]}")
+fi
+echo "$(date) queue: $(for e in "${VARIANTS[@]}"; do printf '%s ' "${e%%|*}"; done)"
 
 for entry in "${VARIANTS[@]}"; do
   name=${entry%%|*}
