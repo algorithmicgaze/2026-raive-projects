@@ -576,3 +576,25 @@ reporting when the box is back. Expected on the box meanwhile: VACE done
   adapter and ms/frame per model; running now.
 - Control clips are H.264 now (`make_control_clips.py` re-encodes with
   ffmpeg): Chromium cannot decode OpenCV's MPEG-4 part 2.
+
+## 2026-09-02 12:05 (box time) — The real fps: HD at 20 fps on the 4090 in WebGPU
+
+`figment/bench` (Electron 44 + Figment's onnxruntime-web 1.25, switches set in
+the main process), 512×768, 30 timed frames after warm-up:
+
+| model | adapter | ms/frame | fps | load |
+| --- | --- | --- | --- | --- |
+| U-Net fp32, default switches | google / swiftshader | 20,037 | 0.05 | — |
+| U-Net fp32, ANGLE on Vulkan | nvidia / lovelace | 17.1 | **58.5** | 0.9 s |
+| pix2pixHD fp32, ANGLE on Vulkan | nvidia / lovelace | 50.3 | **19.9** | 1.7 s |
+| pix2pixHD fp16 (both builds) | nvidia / lovelace | session fails: device has no `shader-f16` | | |
+
+- Switches that make the difference: `--use-angle=vulkan
+  --enable-features=Vulkan,VulkanFromANGLE,DefaultANGLEVulkan`. `--no-sandbox`
+  is not needed. Proposed Figment change: `figment/figment-linux-vulkan.patch`
+  (Linux only, in `main.js`, since the `--render` parser rejects switches).
+- Consequence for the 4090 PC as a Figment machine: without that patch every
+  ML node there runs on SwiftShader.
+- fp16 is optional now: HD fp32 already gives 20 fps. If wanted later, the
+  device needs `shader-f16` (`figment/figment-shader-f16.patch`) and the
+  mixed build (fp32 InstanceNormalization) avoids the gray-frame overflow.

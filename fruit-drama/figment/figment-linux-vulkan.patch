@@ -1,0 +1,19 @@
+On Linux, Chromium's WebGPU falls back to SwiftShader (software) unless ANGLE
+runs on Vulkan. Measured on the 4090 box (Electron 44, onnxruntime-web 1.25):
+default adapter = google/swiftshader, pix2pix U-Net 20 s per frame; with the
+switches below adapter = nvidia/lovelace, U-Net 17 ms (58 fps), pix2pixHD
+50 ms (20 fps) at 512x768. The --render parser rejects unknown switches, so
+they have to be set in the main process.
+
+--- a/src/electron/main.js
++++ b/src/electron/main.js
+@@
+ app.commandLine.appendSwitch('enable-unsafe-webgpu');
+-app.commandLine.appendSwitch('enable-features', 'WebGPU,UseSkiaGraphite');
++const features = ['WebGPU', 'UseSkiaGraphite'];
++if (process.platform === 'linux') {
++  // Route ANGLE through Vulkan: without it Dawn only offers SwiftShader here.
++  app.commandLine.appendSwitch('use-angle', 'vulkan');
++  features.push('Vulkan', 'VulkanFromANGLE', 'DefaultANGLEVulkan');
++}
++app.commandLine.appendSwitch('enable-features', features.join(','));
