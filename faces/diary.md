@@ -249,3 +249,21 @@ Measured MACs per variant, all matching the plan's predictions:
   against 705 ms for V0, so the U-Net stays the speed reference in Figment;
   it goes into the Mac bench as the `pix2pix` row (fp32: its InstanceNorm
   overflows in fp16 on WebGPU).
+
+## 2026-09-03 00:25 (box time) — V1: a third of the MACs, most of the quality
+
+![V1 (channel base 16384) at epoch 4: mesh, EMA output, target](diary/11_v1_epoch4.jpg)
+
+| | GMAC | L1 | PSNR | SSIM | vs V0 PSNR / SSIM | box CPU ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| V0 epoch 4 | 214 | 0.110 | 19.84 | 0.633 | | 705 |
+| V1 epoch 4 | 67 | 0.116 | 19.62 | 0.630 | 24.6 / 0.746 | 295 |
+
+- `--channel-base 16384` trains at 18 min per epoch (V0: 25) and its export
+  runs 2.4× faster on the box CPU. The box-side metrics sit within 1 to 3 %
+  of V0. On the sample grid the difference does not show at this size; the
+  earring in row 2 and the teeth in row 4 are there.
+- The plan predicted 57 ms in Figment for V1, close to the 20 fps line. The
+  Mac bench decides.
+- Hand-over on the 3090 Ti worked: queue now V3, V8, V7, V9, V1b. The 4090
+  is on V2 at 16.7 min per epoch.
