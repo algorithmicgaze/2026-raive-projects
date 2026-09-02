@@ -18,6 +18,7 @@ ping-pong (forward, then backward): a gesture and its return.
 
 import argparse
 import json
+import subprocess
 from pathlib import Path
 
 import cv2
@@ -162,7 +163,8 @@ def main():
             if len(chunk) < args.frames:
                 chunk = pingpong(chunk, args.frames)
             path = args.out / f"{args.name}_{k:03d}.mp4"
-            writer = cv2.VideoWriter(str(path), cv2.VideoWriter_fourcc(*"mp4v"), args.fps, (args.width, args.height))
+            raw = path.with_suffix(".raw.mp4")
+            writer = cv2.VideoWriter(str(raw), cv2.VideoWriter_fourcc(*"mp4v"), args.fps, (args.width, args.height))
             with open(path.with_suffix(".landmarks.jsonl"), "w") as f:
                 for row in chunk:
                     if args.style == "openpose":
@@ -172,6 +174,10 @@ def main():
                     writer.write(cv2.cvtColor(img, cv2.COLOR_RGB2BGR))
                     f.write(json.dumps({"name": row["name"], "poses": row["poses"][:1], "faces": row["faces"][:1]}) + "\n")
             writer.release()
+            # H.264: OpenCV's mp4v (MPEG-4 part 2) does not play in Chromium, so Figment cannot load it.
+            subprocess.run(["ffmpeg", "-v", "error", "-y", "-i", str(raw), "-c:v", "libx264", "-pix_fmt", "yuv420p",
+                            "-crf", "18", str(path)], check=True)
+            raw.unlink()
             print(path, f"source frames {chunk[0]['name']}..{max(r['name'] for r in chunk)}")
             k += 1
     print(f"{k} control clips of {args.frames} frames")
