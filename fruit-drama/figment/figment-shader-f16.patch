@@ -1,0 +1,11 @@
+Request the shader-f16 WebGPU feature when the adapter has it, so fp16 ONNX
+models (half the size of fp32, faster) run in the ONNX Image Model node.
+Without it Dawn rejects every f16 compute pipeline ("Invalid ComputePipeline
+Cast"). initGPU already drops features the adapter lacks, so this is safe on
+adapters without f16.
+
+--- a/src/figment.js
++++ b/src/figment.js
+@@ export async function initGPU(options = {}) {
+-  const { requiredFeatures = [], requiredLimits = {}, powerPreference = 'high-performance' } = options;
++  const { requiredFeatures = ['shader-f16'], requiredLimits = {}, powerPreference = 'high-performance' } = options;

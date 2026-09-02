@@ -526,3 +526,53 @@ console → Machines → codespace-4090 → Disable key expiry.
 A watcher on the Mac retries SSH every minute and resumes syncing and
 reporting when the box is back. Expected on the box meanwhile: VACE done
 ~18:40, pairs ~18:50, pix2pix until ~20:00, pix2pixHD until ~21:30.
+
+## 2026-09-02 10:10 (box time) — Overnight results and a corrected diagnosis
+
+- VACE: 24/24 clips. Pairs: **8,067** from 92 clips. pix2pix: 25 epochs done.
+  pix2pixHD: the box rebooted at 21:55 (third reboot that day) at epoch 8 of
+  10; resumed from the epoch-6 snapshot this morning.
+
+![pix2pix epoch 25 on the scenes dataset](diary/20_unet_scenes_final.jpg)
+
+![pix2pixHD epoch 6 on the scenes dataset](diary/21_hd_scenes_final.jpg)
+
+- The scene color works: each background color produces its scene. Characters
+  are recognizable when the skeleton is complete.
+- **Corrected diagnosis:** the confetti was the resolution. 768×1280 is off
+  the Turbo model's 704×1280 distillation grid; off-grid sizes leave
+  unconverged latent cells (RunPod test, see `SPEC_WAN.md`). My seed/prompt
+  A/B only changed its visibility. All 68 scene clips from the 4090 carry it;
+  RunPod regenerates everything at 704×1280. Rebuild pairs and retrain when
+  those clips are in. VACE clips (480×832, native grid) are unaffected.
+- Open: MediaPipe-style vs OpenPose-detector control for VACE. RunPod says
+  MediaPipe is ignored; the 4090 measurement says 81/81 frames at 2.6 % joint
+  error. One controlled comparison with the same driving clip decides it.
+
+## 2026-09-02 11:45 (box time) — pix2pixHD in Figment: it runs, but headless Electron is on SwiftShader
+
+- pix2pixHD scenes run finished (10 epochs, `media/train_scenes_hd/generator_epoch_10.onnx`).
+- fp16 conversion (`scripts/convert_fp16.py`, fp32 I/O for the node's buffers):
+  365 MB, PSNR 78 dB vs fp32 on the CPU provider. On WebGPU the plain fp16
+  graph outputs uniform gray: InstanceNormalization overflows in fp16. A mixed
+  build keeps InstanceNormalization in fp32 (`op_block_list`).
+- Custom node `figment/onnxImageModelSync.js` (`project.onnxImageModelSync`,
+  stored as source in the `.fgmt`): loads the model inside the frame and waits
+  for each inference while exporting, so every rendered frame is a real
+  inference. `scripts/make_figment_test.py` writes test projects with it.
+- Figment headless (`Figment --render`) on the box: **the fp32 pix2pixHD and
+  the U-Net render real frames** through the ONNX Image Model path. The mixed
+  fp16 model fails with "Invalid ComputePipeline Cast": Figment's device is
+  created without `shader-f16`. Proposed one-line fix:
+  `figment/figment-shader-f16.patch`.
+- The catch: the WebGPU adapter in that headless Electron is **SwiftShader**
+  (software). U-Net ~17 s per frame, HD ~5 min per frame, GPU at 0 %. The
+  NVIDIA Vulkan ICD is present; Chromium's GPU process fails in this session
+  (`dri_gbm.so: Permission denied` under the sandbox). Figment's `--render`
+  parser rejects every Chromium switch, so `--no-sandbox` / Vulkan flags
+  cannot be passed on the command line.
+- `figment/bench/` is a minimal Electron harness (same Chromium, same patched
+  onnxruntime-web) that sets the switches programmatically. It reports the
+  adapter and ms/frame per model; running now.
+- Control clips are H.264 now (`make_control_clips.py` re-encodes with
+  ffmpeg): Chromium cannot decode OpenCV's MPEG-4 part 2.
