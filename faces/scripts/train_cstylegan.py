@@ -107,17 +107,18 @@ class EqualLinear(nn.Module):
 
 
 class EqualConv(nn.Module):
-    def __init__(self, cin, cout, k, bias=True, act=True, stride=1):
+    def __init__(self, cin, cout, k, bias=True, act=True, stride=1, groups=1):
         super().__init__()
-        self.weight = nn.Parameter(torch.randn(cout, cin, k, k))
+        self.weight = nn.Parameter(torch.randn(cout, cin // groups, k, k))
         self.bias = nn.Parameter(torch.zeros(cout)) if bias else None
-        self.scale = 1 / math.sqrt(cin * k * k)
+        self.scale = 1 / math.sqrt(cin // groups * k * k)
         self.pad = k // 2
         self.stride = stride
+        self.groups = groups
         self.act = act
 
     def forward(self, x):
-        x = F.conv2d(x, self.weight * self.scale, self.bias, stride=self.stride, padding=self.pad)
+        x = F.conv2d(x, self.weight * self.scale, self.bias, stride=self.stride, padding=self.pad, groups=self.groups)
         return lrelu(x) if self.act else x
 
 
@@ -145,14 +146,20 @@ class ModConv(nn.Module):
 
 
 class StyledConv(nn.Module):
-    def __init__(self, cin, cout, w_dim, size):
+    """Modulated 3x3 conv + noise + bias + lrelu. With depthwise=True: a plain
+    depthwise 3x3 followed by a modulated 1x1 (the depthwise-separable variant)."""
+
+    def __init__(self, cin, cout, w_dim, size, depthwise=False):
         super().__init__()
-        self.conv = ModConv(cin, cout, 3, w_dim)
+        self.dw = EqualConv(cin, cin, 3, bias=False, act=False, groups=cin) if depthwise else None
+        self.conv = ModConv(cin, cout, 1 if depthwise else 3, w_dim)
         self.noise_strength = nn.Parameter(torch.zeros([]))
         self.bias = nn.Parameter(torch.zeros(cout))
         self.register_buffer("noise_const", torch.randn(1, 1, size[0], size[1]))
 
     def forward(self, x, w, noise_mode):
+        if self.dw is not None:
+            x = self.dw(x)
         x = self.conv(x, w)
         if noise_mode == "random":
             noise = torch.randn(x.shape[0], 1, x.shape[2], x.shape[3], device=x.device, dtype=x.dtype)
@@ -193,13 +200,14 @@ def channel_plan(num_levels, channel_base, channel_max, top_res):
 
 
 class Encoder(nn.Module):
-    def __init__(self, chans, sizes, c_dim):
+    def __init__(self, chans, sizes, c_dim, top_conv=True):
         super().__init__()
         self.from_rgb = EqualConv(3, chans[-1], 1)
         self.convs = nn.ModuleList()
         self.downs = nn.ModuleList()
         for i in range(len(chans) - 1, 0, -1):
-            self.convs.append(EqualConv(chans[i], chans[i], 3))
+            keep = top_conv or i < len(chans) - 1
+            self.convs.append(EqualConv(chans[i], chans[i], 3) if keep else nn.Identity())
             self.downs.append(EqualConv(chans[i], chans[i - 1], 3, stride=2))
         self.conv0 = EqualConv(chans[0], chans[0], 3)
         h0, w0 = sizes[0]
@@ -243,42 +251,98 @@ class Mapping(nn.Module):
         return x
 
 
+def project(cin, cout):
+    """1x1 linear projection, or nothing when the widths already match."""
+    return EqualConv(cin, cout, 1, bias=False, act=False) if cin != cout else nn.Identity()
+
+
 class Synthesis(nn.Module):
-    def __init__(self, chans, sizes, w_dim):
+    """StyleGAN2 skip-architecture synthesis fed by encoder features.
+
+    skip: "concat" joins the upsampled x with the encoder feature (U-Net style);
+    "add" projects both to the level's width and sums them.
+    skip_ch: {res: n} narrows the encoder feature to n channels before concat.
+    conv1_max_res: keep the second conv per level only up to this resolution.
+    synth_top: stop the styled levels at this resolution; out_refine > 0 then
+    adds a bilinear 2x and a light refine block at full resolution.
+    dw_levels: resolutions whose 3x3 convs become depthwise 3x3 + modulated 1x1.
+    """
+
+    def __init__(self, chans, ech, sizes, w_dim, skip="concat", skip_ch=None, conv1_max_res=None,
+                 synth_top=None, out_refine=0, dw_levels=()):
         super().__init__()
-        self.conv_in = StyledConv(chans[0], chans[0], w_dim, sizes[0])
+        self.skip = skip
+        self.conv_in = StyledConv(ech[0], chans[0], w_dim, sizes[0])
         self.rgb_in = ToRGB(chans[0], w_dim)
         self.conv0 = nn.ModuleList()
         self.conv1 = nn.ModuleList()
         self.to_rgb = nn.ModuleList()
-        for i in range(1, len(chans)):
-            self.conv0.append(StyledConv(chans[i - 1] + chans[i], chans[i], w_dim, sizes[i]))
-            self.conv1.append(StyledConv(chans[i], chans[i], w_dim, sizes[i]))
-            self.to_rgb.append(ToRGB(chans[i], w_dim))
+        self.up_proj = nn.ModuleList()
+        self.skip_proj = nn.ModuleList()
+        top = max(sizes[-1])
+        self.levels = len(chans) if synth_top is None else len(chans) - int(math.log2(top // synth_top))
+        for i in range(1, self.levels):
+            res = max(sizes[i])
+            c_prev, c, e = chans[i - 1], chans[i], ech[i]
+            dw = res in dw_levels
+            if skip == "concat":
+                s = e if skip_ch is None else min(e, skip_ch.get(res, e))
+                self.up_proj.append(nn.Identity())
+                self.skip_proj.append(project(e, s))
+                cin0 = c_prev + s
+            else:
+                self.up_proj.append(project(c_prev, c))
+                self.skip_proj.append(project(e, c))
+                cin0 = c
+            self.conv0.append(StyledConv(cin0, c, w_dim, sizes[i], depthwise=dw))
+            keep_conv1 = conv1_max_res is None or res <= conv1_max_res
+            self.conv1.append(StyledConv(c, c, w_dim, sizes[i], depthwise=dw) if keep_conv1 else nn.Identity())
+            self.to_rgb.append(ToRGB(c, w_dim))
+        self.refine = None
+        if out_refine:
+            assert self.levels == len(chans) - 1, "out_refine expects synth_top at half the output size"
+            self.refine = nn.ModuleDict({
+                "from_rgb": EqualConv(3, out_refine, 1),
+                "conv0": StyledConv(out_refine, out_refine, w_dim, sizes[-1]),
+                "conv1": StyledConv(out_refine, out_refine, w_dim, sizes[-1]),
+                "to_rgb": ToRGB(out_refine, w_dim),
+            })
 
     def forward(self, feats, w, noise_mode):
         x = self.conv_in(feats[0], w, noise_mode)
         rgb = self.rgb_in(x, w)
-        for i, (conv0, conv1, to_rgb) in enumerate(zip(self.conv0, self.conv1, self.to_rgb)):
-            x = torch.cat([upsample(x), feats[i + 1]], dim=1)
-            x = conv0(x, w, noise_mode)
-            x = conv1(x, w, noise_mode)
-            rgb = upsample(rgb) + to_rgb(x, w)
+        for i in range(1, self.levels):
+            up = upsample(x)
+            e = self.skip_proj[i - 1](feats[i])
+            x = torch.cat([up, e], dim=1) if self.skip == "concat" else self.up_proj[i - 1](up) + e
+            x = self.conv0[i - 1](x, w, noise_mode)
+            if not isinstance(self.conv1[i - 1], nn.Identity):
+                x = self.conv1[i - 1](x, w, noise_mode)
+            rgb = upsample(rgb) + self.to_rgb[i - 1](x, w)
+        if self.refine is not None:
+            rgb = upsample(rgb)
+            y = self.refine["from_rgb"](rgb)
+            y = self.refine["conv0"](y, w, noise_mode)
+            y = self.refine["conv1"](y, w, noise_mode)
+            rgb = rgb + self.refine["to_rgb"](y, w)
         return rgb
 
 
 class Generator(nn.Module):
     def __init__(self, width, height, z_dim=512, w_dim=512, c_dim=512,
-                 channel_base=32768, channel_max=512, num_levels=8, mapping_layers=4):
+                 channel_base=32768, channel_max=512, num_levels=8, mapping_layers=4,
+                 enc_scale=1.0, enc_top_conv=True, **synthesis_kw):
         super().__init__()
         assert width % (1 << (num_levels - 1)) == 0 and height % (1 << (num_levels - 1)) == 0
         self.z_dim = z_dim
         sizes = [(height >> (num_levels - 1 - i), width >> (num_levels - 1 - i)) for i in range(num_levels)]
         chans = channel_plan(num_levels, channel_base, channel_max, max(width, height))
-        self.encoder = Encoder(chans, sizes, c_dim)
+        ech = [max(8, int(c * enc_scale)) for c in chans]
+        self.encoder = Encoder(ech, sizes, c_dim, enc_top_conv)
         self.mapping = Mapping(z_dim, c_dim, w_dim, mapping_layers)
-        self.synthesis = Synthesis(chans, sizes, w_dim)
+        self.synthesis = Synthesis(chans, ech, sizes, w_dim, **synthesis_kw)
         self.chans = chans
+        self.ech = ech
 
     def forward(self, cond, z, noise_mode="random", psi=1.0):
         feats, c = self.encoder(cond)
@@ -420,6 +484,16 @@ def check_onnx(path, dummy, ref):
 # Training
 
 
+@torch.no_grad()
+def count_gmac(g_ema, width, height, z):
+    from torch.utils.flop_counter import FlopCounterMode
+
+    g_ema.eval()
+    with FlopCounterMode(display=False) as counter:
+        g_ema(torch.zeros(1, 3, height, width, device=device), z, noise_mode="const")
+    return counter.get_total_flops() / 2 / 1e9
+
+
 def latest(pattern):
     files = glob.glob(pattern)
     return max(files, key=os.path.getctime) if files else None
@@ -451,7 +525,7 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
     ap.add_argument("input_dir")
     ap.add_argument("output_dir")
-    ap.add_argument("--epochs", type=int, default=40)
+    ap.add_argument("--epochs", type=int, default=40, help="train up to this epoch (resumes count)")
     ap.add_argument("--batch-size", type=int, default=8)
     ap.add_argument("--lr", type=float, default=0.002)
     ap.add_argument("--lambda-l1", type=float, default=10.0)
@@ -459,8 +533,17 @@ def main():
     ap.add_argument("--r1-gamma", type=float, default=10.0)
     ap.add_argument("--r1-interval", type=int, default=16)
     ap.add_argument("--ema-kimg", type=float, default=10.0)
-    ap.add_argument("--channel-base", type=int, default=32768)
+    ap.add_argument("--channel-base", type=int, default=32768, help="generator width: channels = base / resolution")
     ap.add_argument("--channel-max", type=int, default=512)
+    ap.add_argument("--d-channel-base", type=int, default=32768, help="discriminator width, kept fixed across variants")
+    ap.add_argument("--enc-scale", type=float, default=1.0, help="encoder channel multiplier")
+    ap.add_argument("--no-enc-top-conv", action="store_true", help="drop the encoder 3x3 conv at full resolution")
+    ap.add_argument("--skip", choices=["concat", "add"], default="concat", help="how encoder features join the synthesis")
+    ap.add_argument("--skip-ch", type=str, default=None, help="narrow concat skips, e.g. 512:16,256:32,128:64")
+    ap.add_argument("--conv1-max-res", type=int, default=None, help="second conv per level only up to this resolution")
+    ap.add_argument("--synth-top", type=int, default=None, help="last styled level resolution (e.g. 256)")
+    ap.add_argument("--out-refine", type=int, default=0, help="refine channels at full resolution after --synth-top")
+    ap.add_argument("--dw-levels", type=str, default=None, help="depthwise-separable convs at these resolutions, e.g. 512,256")
     ap.add_argument("--psi", type=float, default=1.0, help="truncation for export (1 = none)")
     ap.add_argument("--sample-interval", type=int, default=250)
     ap.add_argument("--snapshot-interval", type=int, default=2, help="epochs between snapshots")
@@ -493,8 +576,13 @@ def main():
     fixed_cond = torch.stack([fixed[i][0] for i in idx]).to(device)
     fixed_target = torch.stack([fixed[i][1] for i in idx]).to(device)
 
-    G = Generator(width, height, channel_base=args.channel_base, channel_max=args.channel_max).to(device)
-    D = Discriminator(width, height, channel_base=args.channel_base, channel_max=args.channel_max).to(device)
+    skip_ch = {int(k): int(v) for k, v in (kv.split(":") for kv in args.skip_ch.split(","))} if args.skip_ch else None
+    dw_levels = {int(r) for r in args.dw_levels.split(",")} if args.dw_levels else set()
+    G = Generator(width, height, channel_base=args.channel_base, channel_max=args.channel_max,
+                  enc_scale=args.enc_scale, enc_top_conv=not args.no_enc_top_conv,
+                  skip=args.skip, skip_ch=skip_ch, conv1_max_res=args.conv1_max_res,
+                  synth_top=args.synth_top, out_refine=args.out_refine, dw_levels=dw_levels).to(device)
+    D = Discriminator(width, height, channel_base=args.d_channel_base, channel_max=args.channel_max).to(device)
     G_ema = copy.deepcopy(G).eval()
     requires_grad(G_ema, False)
     vgg = VGGLoss().to(device) if args.lambda_vgg > 0 else None
@@ -504,8 +592,10 @@ def main():
 
     n_g = sum(p.numel() for p in G.parameters()) / 1e6
     n_d = sum(p.numel() for p in D.parameters()) / 1e6
+    gmac = count_gmac(G_ema, width, height, export_z)
     log(f"dataset {len(dataset)} pairs, {width}x{height}, batch {args.batch_size}, "
-        f"G {n_g:.1f}M params (channels {G.chans}), D {n_d:.1f}M params")
+        f"G {n_g:.1f}M params, {gmac:.1f} GMAC per frame (channels {G.chans}, encoder {G.ech}), D {n_d:.1f}M params")
+    log(f"args {vars(args)}")
 
     start_epoch, step = 1, 0
     snapshot = None if args.restart else latest(os.path.join(args.output_dir, "snapshot_epoch_*.pt"))
@@ -535,7 +625,9 @@ def main():
         except Exception as e:  # never let an export problem kill the run
             log(f"ONNX export failed: {e!r}")
 
-    for epoch in range(start_epoch, start_epoch + args.epochs):
+    if start_epoch > args.epochs:
+        log(f"epoch {args.epochs} already reached, nothing to do")
+    for epoch in range(start_epoch, args.epochs + 1):
         G.train()
         D.train()
         for it, (cond, real) in enumerate(loader, 1):

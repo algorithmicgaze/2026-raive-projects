@@ -158,3 +158,73 @@ The three-quarter view is the clear win of this export: both eyes, the
 smile with teeth, hair volume on the far side, the black top. At epoch 4
 this pair was a soft face; at epoch 2 a smear. `generator_epoch_6.onnx`,
 834 ms on CPU.
+
+## 2026-09-02 23:00 (box time) — Epoch 8, run stopped on purpose
+
+![Epoch 8: mesh, EMA output, target](diary/09_epoch8.jpg)
+
+- Stopped after the epoch-8 export to free the GPU for the speed experiments.
+  Snapshots exist for epochs 2, 4, 6 and 8; `snapshot_epoch_8.pt` resumes the
+  40-epoch run later (`--epochs 40`, the flag now means "train up to").
+- Losses at the end: d 1.25, adv 1.25, l1 0.087, vgg 0.56. Sample rows:
+  little visible change since epoch 6, which fits the flat L1. Hair, teeth and
+  eyes are the remaining soft spots.
+
+![ONNX epoch 8 on pair 12000: mesh, output, target](diary/10_onnx_epoch8.jpg)
+
+Three-quarter view through `generator_epoch_8.onnx`: the far eye and the
+hair volume are now right; the smile is slightly wider than the target.
+`generator_epoch_8_fp16.onnx` (147 MB) converts with `stylegan/to_fp16.py`,
+max CPU difference 0.0084.
+
+Measured on the Mac (M2 Max, Figment with the PR 109 timing): epoch 4 fp32
+198 ms, fp16 158 ms per frame. Too slow for the installation; the target is
+20 fps. The plan in `optimize-conditional-stylegan.md` (desk copy) gives the
+levers: the generator does 214 GMAC per frame, the channel plan is the big
+one, the skip concat and the encoder the second.
+
+## 2026-09-02 23:15 (box time) — Overnight variant queue
+
+`scripts/train_cstylegan.py` grew flags for every variant in the plan, with
+defaults that leave V0 byte-identical (the epoch-6 weights load strictly and
+reproduce the ONNX to 8e-6): `--channel-base`, `--skip add`, `--skip-ch`,
+`--enc-scale`, `--no-enc-top-conv`, `--conv1-max-res`, `--synth-top` +
+`--out-refine`, `--dw-levels`. The discriminator keeps its own
+`--d-channel-base 32768`, so every variant faces the same critic. The log now
+prints the measured GMAC per frame (torch's flop counter on the export graph).
+
+Measured MACs per variant, all matching the plan's predictions:
+
+| variant | flags | GMAC | G params |
+| --- | --- | --- | --- |
+| V0 | | 214.2 | 69.0 M |
+| V1 | `--channel-base 16384` | 66.8 | 56.3 M |
+| V1b | `--channel-base 24576` | 128.7 | 61.9 M |
+| V2 | `--skip add` | 149.9 | 56.7 M |
+| V3 | V1 + V2 | 46.4 | 46.5 M |
+| V4 | `--skip-ch 512:16,256:32,128:64` | 193.3 | 68.3 M |
+| V5 | `--enc-scale 0.5 --no-enc-top-conv` | 146.2 | 42.2 M |
+| V6 | `--conv1-max-res 128` | 194.9 | 68.7 M |
+| V7 | `--synth-top 256 --out-refine 16` | 176.8 | 68.7 M |
+| V8 | V3 + V5 | 32.6 | 29.4 M |
+| V9 | V8 + V6 | 27.8 | 29.3 M |
+| V11 | V3 + `--dw-levels 512,256` | 38.1 | 46.5 M |
+
+- `scripts/box/run_experiments.sh`: the queue, in the plan's order (V1, V3,
+  V8, V7, V9, V1b, V2, V5, V11, V4, V6), 4 epochs each, snapshot + ONNX at 2
+  and 4, fp16 conversion, then `scripts/eval_variant.py` on 48 fixed pairs
+  (L1, PSNR, SSIM against the targets and against V0's outputs). V0 is a
+  symlink to `output-cstylegan`. Re-run the same command after a power drop:
+  every variant resumes from its newest snapshot and finished ones are
+  skipped. `output-exp/summary.md` is rewritten after each variant.
+- `scripts/export_dw_bench.py` writes the dense-versus-depthwise pair for
+  the plan's section 5 micro-benchmark (`output-exp/dwbench/`).
+- `stylegan/bench_variants.sh` is the Mac half: pulls the fp16 exports, times
+  every one in Figment through `bench.mjs` (`onnx-image:inference-total`),
+  renders 40 frames of the test clip per variant, and compares them with V0's
+  frames (PSNR, SSIM). `exp/results.md` merges both sides.
+- Smoke-tested every variant on the GPU (build, one training step, export,
+  onnxruntime match). VRAM: V0-width variants 18.5 GB, V8 10.4 GB, V11 11.8 GB.
+- Queue started 23:12. V0 at 25 min per epoch; the small variants should take
+  roughly 60 to 80 min for 4 epochs, the wide ones 100. Expect V1, V3, V8,
+  V7, V9 and V1b by morning, the rest during the day.
