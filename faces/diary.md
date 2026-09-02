@@ -267,3 +267,26 @@ Measured MACs per variant, all matching the plan's predictions:
   Mac bench decides.
 - Hand-over on the 3090 Ti worked: queue now V3, V8, V7, V9, V1b. The 4090
   is on V2 at 16.7 min per epoch.
+
+## 2026-09-03 01:35 (box time) — V3, and the 4090 lost power
+
+![V3 (base 16384, additive skips) at epoch 4: mesh, EMA output, target](diary/12_v3_epoch4.jpg)
+
+| | GMAC | L1 | PSNR | SSIM | vs V0 PSNR / SSIM | box CPU ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| V0 epoch 4 | 214 | 0.110 | 19.84 | 0.633 | | 705 |
+| V1 epoch 4 | 67 | 0.116 | 19.62 | 0.630 | 24.6 / 0.746 | 295 |
+| V3 epoch 4 | 46 | 0.115 | 19.81 | 0.625 | 24.3 / 0.733 | 235 |
+
+- V3 (`--channel-base 16384 --skip add`) at 46 GMAC: PSNR equal to V0,
+  SSIM 1.3 % lower, and 3× faster than V0 on the box CPU. Row 3 (the
+  downcast woman) is the row where V3 is visibly softer than V0: hair and
+  the closed eyes. Rows 1, 2 and 4 hold up. 16.8 min per epoch.
+- **The 4090 rebooted at 00:32** (uptime says so; the runner log stops
+  mid-epoch without an error). V2 was 33 min in, before its first snapshot,
+  so it restarts from scratch. This is exactly the case the runner was built
+  for: relaunched at 01:30 with the same command, same queue.
+- Both boxes now carry an `@reboot` crontab line that starts their share of
+  the queue 90 s after boot (`crontab -l` shows it; remove it when the
+  experiments are over). Monitors reconnect when a box drops off the tailnet.
+- 3090 Ti is on V8 since 01:29, then V7, V9, V1b.
