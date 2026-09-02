@@ -1,0 +1,6 @@
+datasets/
+output-*/
+diary/
+.venv/
+*.mp4
+*.zip

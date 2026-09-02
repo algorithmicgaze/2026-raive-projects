@@ -1,0 +1,26 @@
+[project]
+name = "faces"
+version = "0.1.0"
+description = "Add your description here"
+readme = "README.md"
+authors = [
+    { name = "Frederik De Bleser", email = "frederik@debleser.be" }
+]
+requires-python = ">=3.12"
+dependencies = [
+    "jupyter>=1.1.1",
+    "matplotlib>=3.11.1",
+    "onnx>=1.22.0",
+    "onnxruntime>=1.29.0",
+    "onnxscript>=0.7.1",
+    "torch>=2.14.0",
+    "torchvision>=0.29.0",
+    "tqdm>=4.70.0",
+]
+
+[project.scripts]
+faces = "faces:main"
+
+[build-system]
+requires = ["uv_build>=0.12.3,<0.13.0"]
+build-backend = "uv_build"
