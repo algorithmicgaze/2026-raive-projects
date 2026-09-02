@@ -140,3 +140,21 @@ eye and the hair volume are still soft: side poses are rare in the data.
 
 Comparison against the pix2pix U-Net is pending: that needs a second run on
 the same data with the notebook recipe, after this one, or on another GPU.
+
+## 2026-09-02 22:16 (box time) — Epoch 6: the side view catches up
+
+![Epoch 6: mesh, EMA output, target](diary/07_epoch6.jpg)
+
+- Six epochs, 2 h 32 min. Frontal rows change little from epoch 4: sharper
+  hair strands, cleaner collar, the earring in row 2 appears. Row 3 keeps
+  the closed eyes and downcast look from the mesh.
+- Losses: d 1.23 (real +0.75, fake +0.17), adv 1.22, l1 0.110, vgg 0.60.
+  L1 has flattened; vgg still falls. The perceptual term is what improves
+  now, which fits the visible change: detail, not layout.
+
+![ONNX epoch 6 on pair 12000: mesh, output, target](diary/08_onnx_epoch6.jpg)
+
+The three-quarter view is the clear win of this export: both eyes, the
+smile with teeth, hair volume on the far side, the black top. At epoch 4
+this pair was a soft face; at epoch 2 a smear. `generator_epoch_6.onnx`,
+834 ms on CPU.
