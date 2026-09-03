@@ -317,3 +317,32 @@ Measured MACs per variant, all matching the plan's predictions:
   cheap dimension; the Mac timings decide between V3 and V8.
 - 3090 Ti on V7 since 02:34, then V9, V1b. 4090 on V5 since 02:31, then
   V11, V4, V6.
+
+## 2026-09-03 04:10 (box time) — V5, V7, and the 4090 rebooted again
+
+![V7 (synthesis to 256, refine at 512) at epoch 4](diary/15_v7_epoch4.jpg)
+
+| | GMAC | L1 | PSNR | SSIM | vs V0 PSNR / SSIM | box CPU ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| V0 epoch 4 | 214 | 0.110 | 19.84 | 0.633 | | 705 |
+| V5 (half encoder) | 146 | 0.121 | 19.45 | 0.615 | 23.5 / 0.726 | 452 |
+| V7 (synth to 256 + refine) | 177 | 0.114 | 19.72 | 0.625 | 24.4 / 0.739 | 579 |
+| V8 (V3 + V5) | 33 | 0.115 | 19.75 | 0.625 | 24.0 / 0.735 | 181 |
+
+- V5 alone is the worst of the set so far on every metric (PSNR 19.45,
+  SSIM 0.615), yet the same encoder diet inside V8 costs nothing against V3.
+  A narrow encoder feeding a full-width synthesis is the mismatch; narrow
+  into narrow is fine. V5 as a single trim is out.
+- V7 keeps quality (SSIM 0.625, same as V3) but saves only 17 % of the MACs
+  and runs 22 min per epoch, the slowest of the night. Its 512² level is
+  only 16 channels wide, and the grid shows the cost: hair in rows 3 and 4
+  is smoother than V3's. Not worth its price; V3 gets the same quality at a
+  quarter of V7's MACs.
+- **The 4090 rebooted again at 03:33** (second time tonight, both times
+  without a shutdown entry, so the power). The `@reboot` crontab line did
+  its job: the runner came back 90 s after boot, finished V5's fp16 and eval,
+  and started V11, which is already in epoch 3 at 12 min per epoch.
+- The monitors' ssh sessions hung through the reboot without noticing.
+  Restarted them with keepalives (`ServerAliveInterval 30`), so a drop
+  shows up as an event within two minutes.
+- 3090 Ti on V9 since 04:03, then V1b. 4090 on V11, then V4, V6.
