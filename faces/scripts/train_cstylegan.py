@@ -21,6 +21,7 @@ import glob
 import math
 import os
 import random
+import subprocess
 import sys
 import time
 
@@ -624,6 +625,14 @@ def main():
             log(check_onnx(onnx_path, dummy, ref))
         except Exception as e:  # never let an export problem kill the run
             log(f"ONNX export failed: {e!r}")
+            return
+        fp16_script = os.path.join("stylegan", "to_fp16.py")
+        if os.path.exists(fp16_script):  # the fp16 twin Figment runs, written with every snapshot
+            fp16_path = onnx_path[: -len(".onnx")] + "_fp16.onnx"
+            result = subprocess.run(["uv", "run", fp16_script, onnx_path, fp16_path], capture_output=True, text=True)
+            lines = result.stdout.strip().splitlines()
+            log(f"fp16 {os.path.basename(fp16_path)}: {lines[-1]}" if result.returncode == 0 and lines
+                else f"fp16 conversion failed: {result.stderr.strip()[-300:]}")
 
     if start_epoch > args.epochs:
         log(f"epoch {args.epochs} already reached, nothing to do")

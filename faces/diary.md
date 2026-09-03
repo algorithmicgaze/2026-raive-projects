@@ -494,3 +494,33 @@ their epoch-4 snapshots, snapshot + ONNX + fp16 every 2 epochs. The
   contact sheets, 40 rendered frames per variant, the V0 comparisons, both
   boxes' `summary.md` and `runner.log`, the Figment kernel profiles in
   `bench_epoch_4.txt`. The table is committed as `stylegan/results_epoch4.md`.
+
+## 2026-09-03 08:35 (Mac time) — V8 at epoch 8
+
+![V8 at epoch 8: mesh, EMA output, target](diary/19_v8_epoch8.jpg)
+
+![V8 epoch 8 against V0 epoch 8 on three frames of the test clip](diary/21_v8_vs_v0_frames_e8.png)
+
+| epoch 8 | Figment fp16 ms | fps | frames vs V0 e8 PSNR / SSIM | train l1 / vgg |
+| --- | --- | --- | --- | --- |
+| V0 | 181.6 | 5.5 | | 0.087 / 0.557 |
+| V3 | 52.5 | 19.0 | 24.60 / 0.719 | |
+| **V8** | **38.8** | **25.8** | **25.38 / 0.733** | 0.077 / 0.579 |
+| pix2pix e94 (fp32) | 56.4 | 17.7 | 24.13 / 0.670 | |
+
+- V8 continued on the 4090 from the measured epoch-4 weights, 11 min per
+  epoch there. At epoch 8 its frames are closer to V0's than at epoch 4
+  (25.38 dB against 25.26), the tracked three-quarter view has both eyes
+  and the smile, the laugh row has teeth. Training L1 is below V0's at the
+  same epoch.
+- Timing caveat: this session's numbers run 15 % slower than the night's
+  (V0 181.6 ms against 154.6 with the same file; V3 52.5 against 46.3). The
+  Mac was not idle, so compare rows within one table, not across tables.
+  V8's 38.8 ms is the same figure as before within that noise.
+- `train_cstylegan.py` now writes the fp16 twin at every snapshot, so a long
+  run can be timed at any even epoch without a manual conversion. The
+  running V8 and V3 processes still use the old code; they get it at their
+  next launch.
+- Files: `stylegan/results_epoch8.md`; on the 4090
+  `output-exp/V8/generator_epoch_8_fp16.onnx` (64 MB) is the model to load
+  in Figment now. The run continues toward epoch 40.
