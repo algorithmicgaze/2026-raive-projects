@@ -409,3 +409,16 @@ skip width is not where the cost sits. 4090 on V6, the last one, since
   much of that penalty carries over.
 - The 3090 Ti's share (V1, V3, V8, V7, V9, V1b) is complete: its runner
   printed "queue finished" at 06:35. The 4090 is on V6's last epoch.
+
+## 2026-09-03 06:45 (box time) — V6, both queues finished
+
+| | GMAC | L1 | PSNR | SSIM | vs V0 PSNR / SSIM | box CPU ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| V0 epoch 4 | 214 | 0.110 | 19.84 | 0.633 | | 705 |
+| V6 (one conv per level at 512, 256) | 195 | 0.118 | 19.56 | 0.628 | 23.4 / 0.727 | 536 |
+
+V6 drops the second conv at the top two levels of the full-width network:
+9 % fewer MACs, PSNR 0.3 dB down, and the lowest similarity to V0's outputs
+of the wide variants. The same trim inside V9 looked free on the numbers;
+here it is not. Both queues are done (4090 at 06:39, 3090 Ti at 06:35),
+twelve rows in the box-side table. The Mac bench runs now.
