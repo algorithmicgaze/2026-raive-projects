@@ -1,0 +1,88 @@
+# Cars: clean plate diary
+
+Source: `media/147A3791.MP4`, 30 min of a four-lane highway from a bridge,
+4K at 25 fps, fixed camera. Goal: an instrument where each lane has a
+slider for the amount of traffic. First step: an empty road (clean plate).
+
+Working set: every second keyframe (1 per 0.96 s), scaled to 1920x1080,
+1918 JPEG frames in `media/frames-1080/`. Scripts in `plate/`.
+
+## 01 Source frame
+
+`diary/01_source_frame.jpg`. A typical moment. The left lane and hard
+shoulder are often empty; the two middle lanes are jammed for long
+stretches, trucks stand still for minutes.
+
+## 02 Temporal median
+
+`diary/02_median.jpg`, `plate/clean_plate.py`, every 3rd frame (640).
+Per pixel, sort the 640 values and take the middle one. Where the road
+is visible more than half of the time, the middle value is road. Lane 1
+and the shoulder come out clean. The middle lanes show soft ghosts.
+
+## 03 Spread map
+
+`diary/03_spread.jpg`. Median absolute deviation per pixel. Bright means
+the samples disagree a lot, so the median is a guess. It lights up
+exactly the two middle lanes.
+
+## 04 Mode (most frequent colour) fails
+
+`diary/04_mode.jpg`. Idea: instead of the middle value, take the most
+common one, so road wins even below 50%. Result: black and white
+speckle. Black cars and white trucks each land in one saturated colour
+bin; grey asphalt spreads over many neighbouring bins and loses the
+vote. Not a bug, a lesson: the road is not the most consistent colour,
+it is the most common surface.
+
+## 05 Iterative masked median
+
+`plate/clean_plate2.py`, all 1918 frames via a disk memmap (12 GB).
+Start from the median. For each frame and pixel: if the value is close
+to the current plate (tolerance 18 after a 5x5 blur), call it road.
+Recompute the plate as the median of the road samples only. Repeat.
+`diary/06_iter1.jpg` is one pass; ghosts in the middle lanes are mostly
+gone. `diary/07_roadfrac.jpg` shows how often each pixel was road:
+the middle lanes only 20 to 30 percent of the time.
+
+## 06 Three rounds, holes, timeline
+
+`diary/08_iter3.jpg` after three rounds (holes 0.12% of pixels, kept
+from the plain median). `diary/09_holes.jpg` marks the holes in orange:
+tree edges, lamp posts, the crash barriers. Those are not vehicles.
+`diary/10_occupancy.jpg`: fraction of road pixels that differ from the
+plate, per second. The road is never empty: best moment 28% occupied
+(`diary/11_emptiest_frame.jpg`, t=202 s), median 57%. So no single
+frame can serve as plate; it has to be assembled.
+
+## 07 Camera drift
+
+Frederik spotted that the camera shifted. `plate/measure_drift.py`:
+phase correlation of the graffiti panel against frame 0 gives the
+per-frame shift, `diary/13_drift.png`. About 1 px steps in x, a slow
+2 px wander in y at 1080p, so 2 to 4 px at 4K. Enough to blur every
+edge and to misalign sprites later. Fix: `plate/stabilize.py`, SIFT on
+the static parts (road polygon masked out), RANSAC similarity transform
+to frame 0, transforms saved in `output-plate/transforms.npy` for reuse
+on the 4K frames. Then the plate is rebuilt on the aligned frames.
+
+After stabilisation the residual drift is below 0.3 px on every frame
+(`diary/14_drift_after.png`). Transforms: shift up to 11 px, rotation
+below 0.07 degrees, scale within 0.06 percent, so a similarity transform
+is enough; no need for a homography.
+
+## Next: the instrument
+
+Reference: Fernando Livschitz, Rush Hour (one intersection, many takes,
+cars cut out and layered). Plan:
+
+1. Vehicle clips: frame minus plate gives a mask; track each vehicle
+   from under the bridge to the bottom edge; store as a short clip with
+   alpha and its lane. Harvest only from light-traffic moments (see
+   occupancy timeline) so masks do not merge.
+2. Library sorted per lane.
+3. Playback over the plate: per-lane spawn rate from a slider, clips
+   kept at a safe gap. Zero is empty, maximum is a jam. The video always
+   plays; only the density changes.
+4. Figment node: JS + WebGPU, inputs plate, clip library, four numbers;
+   the sliders can then be driven by MIDI, hand tracking or sensors.
