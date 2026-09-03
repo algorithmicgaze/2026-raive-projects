@@ -17,7 +17,7 @@ import cv2, numpy as np
 from tqdm import tqdm
 
 sys.path.insert(0, str(Path(__file__).parent))
-from lanes import lane_of
+from lanes import lane_of, bound_x
 from segment import vehicle_labels, soft_alpha, local_plate, ratio_map
 
 FPS = 25
@@ -77,7 +77,7 @@ def main():
     ap.add_argument("frames", type=Path, nargs="+")
     ap.add_argument("--plate", type=Path, default=Path("output-plate-stab/iter3.png"))
     ap.add_argument("--out", type=Path, default=Path("output-clips"))
-    ap.add_argument("--min-len", type=int, default=20)
+    ap.add_argument("--min-len", type=int, default=50)
     ap.add_argument("--debug", type=Path, default=None, help="folder for annotated frames")
     args = ap.parse_args()
     plate = cv2.imread(str(args.plate))
@@ -178,6 +178,17 @@ def reject(why, t=None):
     return 0
 
 
+def sane_shape(boxes, lane, h):
+    """One vehicle is never wider than about 1.3 lanes at its own row, nor
+    taller than most of the road. Anything bigger is a merged pack."""
+    for x, y, w, bh in boxes:
+        yb = min(y + bh, h)
+        lane_w = bound_x(lane + 1, yb) - bound_x(lane, yb)
+        if w > 1.3 * lane_w or bh > 0.8 * (h - 425):
+            return False
+    return True
+
+
 def write_clip(t, files, masks, plate, gain, args, src):
     if len(t.frames) < args.min_len:
         return reject("short")
@@ -193,6 +204,8 @@ def write_clip(t, files, masks, plate, gain, args, src):
     lane = max(set(lanes), key=lanes.count)
     if lane < 0 or lane > 3 or lanes.count(lane) < 0.9 * len(lanes):
         return reject("lane change", t)
+    if not sane_shape(t.boxes, lane, h):
+        return reject("too big", t)
     frames, boxes, labels = [], [], []
     for k in range(len(t.frames)):
         if k and t.frames[k] - t.frames[k - 1] > 1:

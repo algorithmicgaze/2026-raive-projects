@@ -135,3 +135,20 @@ lane, from none to a few; cars start under the bridge and roll; a
 cross-fade is acceptable when the count drops. It is an art piece played
 like an instrument, so close to accurate is enough. Implemented in the
 page player, `play.py` and `figment/highway.js`.
+
+Sanity rules added after inspecting lanes 2 to 4: every one of their
+clips was a merged pack or a fragment. A vehicle is never wider than
+1.3 lanes at its row, nor taller than 80% of the road; a crossing takes
+at least 50 frames. `clean_clips.py` applies the rules to an existing
+harvest (14 removed; lanes 2 and 4 went to zero, lane 3 to two).
+
+Capacity: packed nose to tail only three flowing cars fit in a lane,
+because under the bridge a car moves 1 px per frame while its cut-out is
+74 px tall. Fixes: mid-road entry with a 20-frame fade-in when the
+bridge has been blocked for a second, and the touch test on the core
+60% of the box (the box holds shadow and padding). Capacity now 5 to 6.
+
+Lane borrowing (toggle, default on): lanes with fewer than 8 own clips
+take lane-1 clips slid sideways along the road plane, same rows, x
+moved to the target lane's centre at that row (`lanes.lane_center_x`).
+Same size and speed; the viewing angle is slightly off, most in lane 4.
