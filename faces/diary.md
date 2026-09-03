@@ -358,3 +358,25 @@ V11 loses 3 % SSIM against V3 for an 18 % MAC cut, and on the box CPU it
 is only 15 % faster: the depthwise pass is memory-bound, as the plan
 feared. Unless the Figment micro-benchmark (dense versus depthwise pair)
 shows a large win on the Apple GPU, V11 is out. 4090 on V4 since 04:23.
+
+## 2026-09-03 05:10 (box time) — V9: best numbers, softest faces
+
+![V9 (V8 + one conv per level at 512 and 256) at epoch 4](diary/16_v9_epoch4.jpg)
+
+| | GMAC | L1 | PSNR | SSIM | vs V0 PSNR / SSIM | box CPU ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| V0 epoch 4 | 214 | 0.110 | 19.84 | 0.633 | | 705 |
+| V8 | 33 | 0.115 | 19.75 | 0.625 | 24.0 / 0.735 | 181 |
+| V9 (V8 + `--conv1-max-res 128`) | 28 | 0.113 | 19.80 | 0.630 | 23.7 / 0.736 | 149 |
+
+- V9 is the smallest network of the night (7.7× fewer MACs than V0, 4.7×
+  faster on the box CPU) and posts the best box-side numbers of all the
+  variants. The grid disagrees: rows 3 and 4 are visibly softer than V8,
+  the laugh in row 4 has smudged eyes and flat teeth. The numbers are
+  pixel averages on 48 pairs and cannot see it; the differences between
+  the small variants (SSIM 0.625 to 0.630) are noise at epoch 4.
+- Lesson for the morning: rank by the Figment timing first, then look at the
+  frames. The box-side metrics only separate the bad ideas (V5 alone, V11)
+  from the rest.
+- 3090 Ti on V1b (the last of its share) since 05:05. 4090 on V4 since
+  04:23, then V6.
