@@ -1,0 +1,83 @@
+{
+  "version": 6,
+  "nodes": [
+    {
+      "id": 6,
+      "name": "Out",
+      "type": "core.out",
+      "x": 327.9840277641799,
+      "y": 480.3755289471413
+    },
+    {
+      "id": 10,
+      "name": "ONNX Image Model",
+      "type": "ml.onnxImageModel",
+      "x": 324.4702217884376,
+      "y": 399.09633880492385,
+      "values": {
+        "model": {
+          "type": "value",
+          "value": "three_faces_stylegan_epoch_8.onnx"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "name": "Webcam Image",
+      "type": "image.webcamImage",
+      "x": 330.95240281076246,
+      "y": 202.6284366852499
+    },
+    {
+      "id": 14,
+      "name": "Resize",
+      "type": "image.resize",
+      "x": 337.87558712543836,
+      "y": 268.8140787335467
+    },
+    {
+      "id": 15,
+      "name": "Detect Faces",
+      "type": "ml.detectFaces",
+      "x": 337.87558712543785,
+      "y": 331.9535196833869,
+      "values": {
+        "draw mode": {
+          "type": "value",
+          "value": "tesselation"
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "outNode": 10,
+      "outPort": "out",
+      "inNode": 6,
+      "inPort": "in"
+    },
+    {
+      "outNode": 13,
+      "outPort": "image",
+      "inNode": 14,
+      "inPort": "in"
+    },
+    {
+      "outNode": 14,
+      "outPort": "out",
+      "inNode": 15,
+      "inPort": "in"
+    },
+    {
+      "outNode": 15,
+      "outPort": "out",
+      "inNode": 10,
+      "inPort": "in"
+    }
+  ],
+  "settings": {
+    "oscEnabled": false,
+    "oscPort": 8000
+  },
+  "types": []
+}

@@ -5,3 +5,6 @@ diary/
 *.mp4
 *.zip
 stylegan/exp/
+stylegan/exp_*.fgmt
+*.figment-optimized.json
+stylegan/*.png
