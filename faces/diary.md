@@ -422,3 +422,57 @@ V6 drops the second conv at the top two levels of the full-width network:
 of the wide variants. The same trim inside V9 looked free on the numbers;
 here it is not. Both queues are done (4090 at 06:39, 3090 Ti at 06:35),
 twelve rows in the box-side table. The Mac bench runs now.
+
+## 2026-09-03 07:05 (Mac time) — The morning table: Figment timings and frames
+
+`stylegan/bench_variants.sh` on the M2 Max, Figment with the PR 109 timing,
+fp16 models, `onnx-image:inference-total` p50, 40 frames of the test clip
+compared with V0's frames. Full table with the box-side columns in
+`stylegan/results_epoch4.md`.
+
+| variant | GMAC | Figment fp16 ms | fps | frames vs V0 PSNR / SSIM | plan predicted ms |
+| --- | --- | --- | --- | --- | --- |
+| V0 | 214 | 154.6 | 6.5 | | 158 (measured) |
+| V1 `--channel-base 16384` | 67 | 63.6 | 15.7 | 24.79 / 0.725 | 57 |
+| V1b `--channel-base 24576` | 129 | 115.6 | 8.7 | 24.88 / 0.730 | |
+| V2 `--skip add` | 150 | 109.5 | 9.1 | 25.06 / 0.745 | 123 |
+| **V3** = V1 + V2 | 46 | 46.3 | **21.6** | 24.88 / 0.713 | 46 |
+| V4 narrow skips | 193 | 144.2 | 6.9 | 24.94 / 0.719 | 147 |
+| V5 encoder diet | 146 | 114.3 | 8.7 | 23.84 / 0.696 | 116 |
+| V6 one conv at top | 195 | 141.1 | 7.1 | 24.45 / 0.707 | 147 |
+| V7 synth to 256 | 177 | 121.7 | 8.2 | 24.88 / 0.712 | 117 |
+| **V8** = V3 + V5 | 33 | 37.7 | **26.5** | **25.26 / 0.731** | 36 |
+| V9 = V8 + V6 | 28 | 32.7 | 30.6 | 24.63 / 0.729 | 34 |
+| V11 = V3 + depthwise | 38 | 42.1 | 23.8 | 23.70 / 0.696 | 41 |
+| pix2pix U-Net (fp32) | | 55.9 | 17.9 | 23.24 / 0.659 | |
+
+![V8 against V0 on three frames of the test clip: V0, V8, amplified difference](diary/17_v8_vs_v0_frames.png)
+
+- **The plan's predictor was right.** Every measured time is within 10 % of
+  the predicted one (V1 is the outlier at 63.6 against 57). The MAC model
+  with 0.56 ms per GMAC plus activation overhead is good enough to design
+  the next variant on paper.
+- **Three variants pass 20 fps: V3, V8, V9.** V8 is the pick: 37.7 ms, and
+  its frames are the closest to V0's of the whole set (25.26 dB, SSIM
+  0.731), closer than V3 and V1 that have more MACs. On the contact sheet
+  V8 differs from V0 in hair strands and a smudged smile in the third frame;
+  skin, eyes, background match. V9 buys 5 ms more and pays in the faces
+  (the diary entry of 05:10); keep it as the reserve if the installation
+  machine is slower than this Mac.
+- **Depthwise is out.** The section 5 micro-benchmark: dense 10.8 ms,
+  depthwise 8.2 ms for the same two levels, a 1.3× gain against the 2× the
+  plan required. V11's own timing says the same (42.1 ms against V3's 46.3)
+  and its frames are the worst of the small variants.
+- **pix2pix at 17.9 fps** on this Mac is `ConvTranspose`-bound (43 of its 56
+  ms), which is why the fruit-drama U-Net looked fast on the 4090 and is not
+  here. V8 is faster than pix2pix in Figment and better on every quality
+  number: the "quality upgrade at the same speed" brief is met.
+- Metrics caveat, restated: the 48-pair box-side numbers ranked V9 first
+  and V8 in the middle; the frame comparison and the eye rank V8 first.
+  The frame comparison against V0 is the metric to keep.
+
+Next, as the plan says: the winners get the full run. `EPOCHS=40
+run_experiments.sh V8` on the 4090 (about 11 h) and `EPOCHS=40
+run_experiments.sh V3` on the 3090 Ti (about 11 h), both resuming from
+their epoch-4 snapshots, snapshot + ONNX + fp16 every 2 epochs. The
+`@reboot` crontab lines now point at these.
