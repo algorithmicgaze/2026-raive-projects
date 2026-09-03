@@ -542,3 +542,18 @@ their epoch-4 snapshots, snapshot + ONNX + fp16 every 2 epochs. The
   ssh command line kills the shell that runs it. Use `[o]utput-exp/V8/`
   with a trailing slash or a bracket trick that the calling shell cannot
   match.
+
+## 2026-09-03 10:00 (Mac time) — The V8 recipe as a notebook
+
+- `~/Projects/pix2pix/train_stylegan2_conditional.ipynb`: the V8
+  configuration as a single notebook in the style of the repo's others
+  (same setup cells, `# === Section ===` blocks, plain-variable config,
+  `train()` and a run cell). Defaults: `channel_base 16384`, `skip_mode
+  "add"`, `encoder_scale 0.5`, `encoder_top_conv False`, 512 px, batch 8,
+  40 epochs. Every snapshot writes the fp32 and the fp16 ONNX.
+- The variant knobs that lost the night (narrow skips, one conv per level,
+  synthesis to 256, depthwise) are not in the notebook; the four that define
+  V8 against V0 are, with V0's values in the comments.
+- Smoke-tested on the Mac's CPU with 8 pairs at 128 px: two epochs,
+  snapshot, both exports, onnxruntime runs them. README row added there.
+  Left uncommitted in that repo.
