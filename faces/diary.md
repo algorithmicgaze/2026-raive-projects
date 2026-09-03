@@ -346,3 +346,15 @@ Measured MACs per variant, all matching the plan's predictions:
   Restarted them with keepalives (`ServerAliveInterval 30`), so a drop
   shows up as an event within two minutes.
 - 3090 Ti on V9 since 04:03, then V1b. 4090 on V11, then V4, V6.
+
+## 2026-09-03 04:25 (box time) — V11: depthwise is not free
+
+| | GMAC | L1 | PSNR | SSIM | vs V0 PSNR / SSIM | box CPU ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| V3 | 46 | 0.115 | 19.81 | 0.625 | 24.3 / 0.733 | 235 |
+| V11 (V3 + depthwise at 512, 256) | 38 | 0.120 | 19.38 | 0.607 | 23.4 / 0.721 | 201 |
+
+V11 loses 3 % SSIM against V3 for an 18 % MAC cut, and on the box CPU it
+is only 15 % faster: the depthwise pass is memory-bound, as the plan
+feared. Unless the Figment micro-benchmark (dense versus depthwise pair)
+shows a large win on the Apple GPU, V11 is out. 4090 on V4 since 04:23.
