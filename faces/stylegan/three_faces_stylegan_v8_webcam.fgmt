@@ -5,15 +5,15 @@
       "id": 6,
       "name": "Out",
       "type": "core.out",
-      "x": 327.9840277641799,
-      "y": 480.3755289471413
+      "x": 158.98402776417993,
+      "y": 631.3755289471412
     },
     {
       "id": 10,
       "name": "ONNX Image Model",
       "type": "ml.onnxImageModel",
-      "x": 463.7196464209647,
-      "y": 397.7949423130311,
+      "x": 204.7196464209647,
+      "y": 312.7949423130311,
       "values": {
         "model": {
           "type": "value",
@@ -25,37 +25,38 @@
       "id": 13,
       "name": "Webcam Image",
       "type": "image.webcamImage",
-      "x": 330.95240281076246,
-      "y": 202.6284366852499
+      "x": 155.95240281076246,
+      "y": 43.62843668524991
     },
     {
       "id": 14,
       "name": "Resize",
       "type": "image.resize",
-      "x": 305.86123342487593,
-      "y": 338.0483721022423
+      "x": 138.86123342487593,
+      "y": 111.0483721022423
     },
     {
       "id": 15,
       "name": "Detect Faces",
       "type": "ml.detectFaces",
-      "x": 356.8759759070725,
-      "y": 398.5850200682972,
+      "x": 190.87597590707247,
+      "y": 193.58502006829718,
       "values": {
         "draw mode": {
           "type": "value",
           "value": "tesselation"
         }
       }
+    },
+    {
+      "id": 16,
+      "name": "Stack",
+      "type": "image.stack",
+      "x": 15,
+      "y": 506
     }
   ],
   "connections": [
-    {
-      "outNode": 10,
-      "outPort": "out",
-      "inNode": 6,
-      "inPort": "in"
-    },
     {
       "outNode": 13,
       "outPort": "image",
@@ -72,6 +73,24 @@
       "outNode": 15,
       "outPort": "out",
       "inNode": 10,
+      "inPort": "in"
+    },
+    {
+      "outNode": 14,
+      "outPort": "out",
+      "inNode": 16,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 10,
+      "outPort": "out",
+      "inNode": 16,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 16,
+      "outPort": "out",
+      "inNode": 6,
       "inPort": "in"
     }
   ],
