@@ -4,19 +4,22 @@
  * @category image
  */
 
-// Composites vehicle clips over a clean plate. Each lane has a density
-// slider: at 0 the lane is empty, at 1 it is as full as the clips allow
-// without touching. The video always runs; the sliders only change how
-// often a new car enters a lane. Clips come from instrument/pack_clips.py.
+// Composites vehicle clips over a clean plate. Each lane input is the
+// number of cars wanted in that lane. Cars enter under the bridge and
+// roll down; a new one only starts when it can drive the whole way
+// without touching another car in its lane. When a lane holds more cars
+// than wanted, the farthest ones fade out. Clips: instrument/pack_clips.py.
 
 node.timeDependent = true;
 const manifestIn = node.fileIn('manifest', '', { fileType: 'generic' });
 const plateIn = node.fileIn('plate', '', { fileType: 'image' });
+// Lane inputs are a fill fraction: 0 is empty, 1 is a full lane, as many
+// cars as fit nose to tail (measured per lane when the clips load).
 const lane1In = node.numberIn('lane 1', 0.3, { min: 0, max: 1, step: 0.01 });
 const lane2In = node.numberIn('lane 2', 0.3, { min: 0, max: 1, step: 0.01 });
 const lane3In = node.numberIn('lane 3', 0.3, { min: 0, max: 1, step: 0.01 });
 const lane4In = node.numberIn('lane 4', 0.3, { min: 0, max: 1, step: 0.01 });
-const maxRateIn = node.numberIn('max rate', 1.2, { min: 0.1, max: 5, step: 0.1 });
+const fadeIn = node.numberIn('fade frames', 20, { min: 1, max: 100, step: 1 });
 const gapIn = node.numberIn('gap', 24, { min: 0, max: 200, step: 1 });
 const seedIn = node.numberIn('seed', 1, { min: 1, max: 9999, step: 1 });
 const imageOut = node.imageOut('out');
@@ -28,6 +31,7 @@ let loadedManifest = '';
 let plate = null;
 let loadedPlate = '';
 let cars = [];
+const lastClip = [null, null, null, null];
 let frame = 0;
 let lastTime = 0;
 let rng;
@@ -69,7 +73,21 @@ async function loadLibrary(path) {
     const sheet = await createImageBitmap(blob);
     byLane[c.lane - 1].push({ ...c, sheet, n: c.boxes.length });
   }
-  return { byLane, fps: manifest.fps || FPS };
+  return { byLane, fps: manifest.fps || FPS, capacity: byLane.map(measureCapacity) };
+}
+
+// How many cars fit at once: pack the lane's clips nose to tail for 30 s.
+function measureCapacity(lane) {
+  if (!lane.length) return 0;
+  let sim = [];
+  let best = 0;
+  for (let t = 0; t < 750; t++) {
+    const clip = lane[t % lane.length];
+    if (canSpawn(clip, t, gapIn.value, sim)) sim.push({ clip, t0: t });
+    sim = sim.filter((c) => t - c.t0 < c.clip.n);
+    best = Math.max(best, sim.length);
+  }
+  return Math.max(1, best);
 }
 
 function boxesTouch(a, b, m) {
@@ -82,9 +100,9 @@ function boxAt(car, t) {
 }
 
 // No overlap with any car already in this lane, over the clip's whole life.
-function canSpawn(clip, t0, margin) {
+function canSpawn(clip, t0, margin, pool = cars) {
   for (let i = 0; i < clip.n; i++) {
-    for (const c of cars) {
+    for (const c of pool) {
       if (c.clip.lane !== clip.lane) continue;
       const b = boxAt(c, t0 + i);
       if (b && boxesTouch(clip.boxes[i], b, margin)) return false;
@@ -93,16 +111,34 @@ function canSpawn(clip, t0, margin) {
   return true;
 }
 
-function step(densities) {
+function bottom(c) {
+  const b = boxAt(c, frame);
+  return b ? b[1] + b[3] : 0;
+}
+
+function step(wanted) {
   for (let k = 0; k < 4; k++) {
     const lane = library.byLane[k];
     if (!lane.length) continue;
-    if (rng() < (densities[k] * maxRateIn.value) / FPS) {
-      const clip = lane[Math.floor(rng() * lane.length)];
-      if (canSpawn(clip, frame, gapIn.value)) cars.push({ clip, t0: frame });
+    const mine = cars.filter((c) => c.clip.lane - 1 === k && c.fade === undefined);
+    if (mine.length < wanted[k]) {
+      if (rng() < 0.35) {
+        // a little jitter so cars do not enter in lock-step
+        let clip = lane[Math.floor(rng() * lane.length)];
+        if (lane.length > 1 && clip === lastClip[k]) clip = lane[(lane.indexOf(clip) + 1) % lane.length];
+        if (canSpawn(clip, frame, gapIn.value)) {
+          cars.push({ clip, t0: frame });
+          lastClip[k] = clip;
+        }
+      }
+    } else if (mine.length > wanted[k]) {
+      // too many: the farthest car (highest on the road) fades out
+      mine.sort((p, q) => bottom(p) - bottom(q));
+      mine[0].fade = frame;
     }
   }
-  cars = cars.filter((c) => frame - c.t0 < c.clip.n);
+  const fade = fadeIn.value;
+  cars = cars.filter((c) => frame - c.t0 < c.clip.n && (c.fade === undefined || frame - c.fade < fade));
 }
 
 function draw(plate) {
@@ -114,8 +150,10 @@ function draw(plate) {
     const [cw, ch] = c.clip.cell;
     const sx = (i % c.clip.cols) * cw;
     const sy = Math.floor(i / c.clip.cols) * ch;
+    ctx.globalAlpha = c.fade === undefined ? 1 : Math.max(0, 1 - (frame - c.fade) / fadeIn.value);
     ctx.drawImage(c.clip.sheet, sx, sy, b[2], b[3], b[0], b[1], b[2], b[3]);
   }
+  ctx.globalAlpha = 1;
 }
 
 node.onRender = async () => {
@@ -136,7 +174,7 @@ node.onRender = async () => {
     ctx = canvas.getContext('2d');
     target.setSize(plate.width, plate.height);
   }
-  const densities = [lane1In.value, lane2In.value, lane3In.value, lane4In.value];
+  const wanted = [lane1In.value, lane2In.value, lane3In.value, lane4In.value].map((v, k) => Math.round(v * library.capacity[k]));
 
   // Real time in the editor, one step per frame when exporting.
   let steps = 1;
@@ -146,7 +184,7 @@ node.onRender = async () => {
     if (steps > 0) lastTime = now;
   }
   for (let s = 0; s < steps; s++) {
-    step(densities);
+    step(wanted);
     frame++;
   }
   draw(plate);

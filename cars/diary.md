@@ -110,13 +110,15 @@ Scripts in `instrument/`. Pipeline:
    lane and never merge with another vehicle. Gaps of a few frames hold
    the previous cut-out. Crops are colour-matched to the global plate
    with a low-frequency ratio map.
-5. `play.py`: Python player. Per lane a density 0..1 sets the spawn
-   chance per frame; a clip only starts if it never touches another car
-   in its lane over its whole life. Far cars draw first. Writes an mp4.
+5. `play.py`: Python player. Per lane a number of cars wanted (0..8).
+   Below the target a clip starts (with jitter) as soon as it can drive
+   its whole life without touching another car in its lane; above the
+   target the farthest car fades out over 20 frames. The same clip is
+   not picked twice in a row. Far cars draw first. Writes an mp4.
 6. `pack_clips.py` + `figment/highway.js`: sprite sheets and manifest,
    and the Figment node (fork any image node, paste the source; project
    files store forked node types). Inputs: plate image, manifest, four
-   lane sliders, max rate, gap, seed. Draws on an OffscreenCanvas and
+   lane counts 0..8, fade frames, gap, seed. Draws on an OffscreenCanvas and
    uploads to the render target. Steps in real time in the editor, one
    step per frame on export.
 
@@ -127,3 +129,9 @@ between, so the harvest runs over thirteen 60 s windows.
 
 Yield per 60 s window in lane 1: about 10 clips. Lanes 2 to 4: near zero
 in jammed windows, a few in flowing ones.
+
+Frederik's direction (3 Sep): a slider is the number of cars in that
+lane, from none to a few; cars start under the bridge and roll; a
+cross-fade is acceptable when the count drops. It is an art piece played
+like an instrument, so close to accurate is enough. Implemented in the
+page player, `play.py` and `figment/highway.js`.

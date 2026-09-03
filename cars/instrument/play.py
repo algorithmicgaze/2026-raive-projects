@@ -3,10 +3,10 @@
 # dependencies = ["numpy", "opencv-python-headless", "tqdm"]
 # ///
 """Play the highway: composite vehicle clips over the clean plate with a
-density per lane. The video always runs; the sliders only change how
-often a new car enters each lane.
+number of cars per lane. Cars enter under the bridge and roll down; when
+a lane holds more than wanted, the farthest ones fade out.
 
-  uv run instrument/play.py --lanes 0.2,0.8,0,1 --seconds 20 out.mp4
+  uv run instrument/play.py --lanes 2,5,0,1 --seconds 20 out.mp4
   uv run instrument/play.py --demo out.mp4
 """
 import argparse, json, random, subprocess, sys
@@ -15,6 +15,7 @@ import cv2, numpy as np
 from tqdm import tqdm
 
 FPS = 25
+FADE = 20
 
 
 class Clip:
@@ -39,6 +40,7 @@ class Library:
 class Car:
     def __init__(self, clip, t0):
         self.clip, self.t0 = clip, t0
+        self.fade = None
 
     def box_at(self, t):
         i = t - self.t0
@@ -74,17 +76,19 @@ def composite(plate, cars, t):
     for (x, y, w, h), c in active:
         rgba = c.clip.frames[t - c.t0]
         a = rgba[:, :, 3:4].astype(np.float32) / 255.0
+        if c.fade is not None:
+            a *= max(0.0, 1 - (t - c.fade) / FADE)
         roi = out[y:y + h, x:x + w]
         roi[:] = (rgba[:, :, :3] * a + roi * (1 - a)).astype(np.uint8)
     return out
 
 
-def demo_density(t_sec):
+def demo_fill(t_sec):
     """A 40 s sweep: each lane fills up in turn, then everything at once, then empty."""
     d = np.zeros(4)
     if t_sec < 20:
-        k = int(t_sec // 5); d[k] = min(1.0, (t_sec % 5) / 3)
-        for j in range(k): d[j] = 0.15
+        k = int(t_sec // 5); d[k] = min(1.0, (t_sec % 5) / 4)
+        for j in range(k): d[j] = 0.2
     elif t_sec < 30:
         d[:] = min(1.0, (t_sec - 20) / 4)
     else:
@@ -92,42 +96,65 @@ def demo_density(t_sec):
     return d
 
 
+def measure_capacity(lane, margin):
+    """How many cars fit at once: pack the lane's clips nose to tail for 30 s."""
+    if not lane:
+        return 0
+    sim, best = [], 0
+    for t in range(750):
+        clip = lane[t % len(lane)]
+        if can_spawn(clip, t, sim, margin):
+            sim.append(Car(clip, t))
+        sim = [c for c in sim if c.alive(t)]
+        best = max(best, len(sim))
+    return max(1, best)
+
+
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("out", type=Path)
     ap.add_argument("--clips", type=Path, default=Path("output-clips"))
     ap.add_argument("--plate", type=Path, default=Path("output-plate-stab/iter3.png"))
-    ap.add_argument("--lanes", type=str, default=None, help="four densities 0..1, e.g. 0.2,0.8,0,1")
+    ap.add_argument("--lanes", type=str, default=None, help="fill per lane 0..1, e.g. 0.2,1,0,0.5 (1 = as many cars as fit)")
     ap.add_argument("--demo", action="store_true")
     ap.add_argument("--seconds", type=float, default=20)
-    ap.add_argument("--max-rate", type=float, default=1.2, help="spawn attempts per second per lane at density 1")
     ap.add_argument("--margin", type=int, default=24)
     ap.add_argument("--seed", type=int, default=1)
     args = ap.parse_args()
     random.seed(args.seed)
     plate = cv2.imread(str(args.plate)); h, w = plate.shape[:2]
     lib = Library(args.clips)
-    const = np.array([float(v) for v in args.lanes.split(",")]) if args.lanes else None
+    fill = np.array([float(v) for v in args.lanes.split(",")]) if args.lanes else None
+    capacity = [measure_capacity(lib.by_lane[k], args.margin) for k in range(4)]
+    print("capacity per lane:", capacity)
+    last_clip = [None] * 4
     seconds = 40 if args.demo else args.seconds
     n = int(seconds * FPS)
     ff = subprocess.Popen(["ffmpeg", "-y", "-v", "error", "-f", "rawvideo", "-pix_fmt", "bgr24", "-s", f"{w}x{h}", "-r", str(FPS),
                            "-i", "-", "-c:v", "libx264", "-preset", "fast", "-crf", "18", "-pix_fmt", "yuv420p", str(args.out)], stdin=subprocess.PIPE)
     cars = []
     for t in tqdm(range(n), desc="render"):
-        dens = demo_density(t / FPS) if args.demo else const
+        wanted = [round(f * c) for f, c in zip(demo_fill(t / FPS) if args.demo else fill, capacity)]
         for k in range(4):
-            if not lib.by_lane[k]: continue
-            p = dens[k] * args.max_rate / FPS   # chance of a spawn attempt this frame
-            if random.random() < p:
-                clip = random.choice(lib.by_lane[k])
-                if can_spawn(clip, t, cars, args.margin):
-                    cars.append(Car(clip, t))
-        cars = [c for c in cars if c.alive(t)]
+            lane = lib.by_lane[k]
+            if not lane: continue
+            mine = [c for c in cars if c.clip.lane == k and c.fade is None]
+            if len(mine) < wanted[k]:
+                if random.random() < 0.35:   # jitter, so cars do not enter in lock-step
+                    clip = random.choice(lane)
+                    if len(lane) > 1 and clip is last_clip[k]:
+                        clip = lane[(lane.index(clip) + 1) % len(lane)]
+                    if can_spawn(clip, t, cars, args.margin):
+                        cars.append(Car(clip, t)); last_clip[k] = clip
+            elif len(mine) > wanted[k]:
+                far = min(mine, key=lambda c: c.box_at(t)[1] + c.box_at(t)[3])
+                far.fade = t
+        cars = [c for c in cars if c.alive(t) and (c.fade is None or t - c.fade < FADE)]
         frame = composite(plate, cars, t)
         if args.demo:
             for k in range(4):
                 cv2.rectangle(frame, (20 + k * 60, 20), (60 + k * 60, 40), (40, 40, 40), -1)
-                cv2.rectangle(frame, (20 + k * 60, 20), (20 + k * 60 + int(40 * dens[k]), 40), (40, 160, 255), -1)
+                cv2.rectangle(frame, (20 + k * 60, 20), (20 + k * 60 + int(40 * wanted[k] / max(1, capacity[k])), 40), (40, 160, 255), -1)
         ff.stdin.write(frame.tobytes())
     ff.stdin.close(); ff.wait()
     print("wrote", args.out)
