@@ -476,3 +476,21 @@ run_experiments.sh V8` on the 4090 (about 11 h) and `EPOCHS=40
 run_experiments.sh V3` on the 3090 Ti (about 11 h), both resuming from
 their epoch-4 snapshots, snapshot + ONNX + fp16 every 2 epochs. The
 `@reboot` crontab lines now point at these.
+
+## 2026-09-03 07:20 (box time) — V8 continues on the 4090, from its epoch-4 weights
+
+- Correction to the 07:05 entry: V8 was trained on the 3090 Ti, so the first
+  relaunch on the 4090 found no snapshot and started from scratch. Killed
+  after ten minutes, the epoch-4 snapshot and exports were relayed through
+  the Mac (1.3 GB, ten minutes into the 4090's slow link), and the run
+  restarted at 07:14 from `snapshot_epoch_4.pt`, step 7452. It is the same
+  network that was measured, continued. Epoch 8 is due around 08:20,
+  snapshot + ONNX + fp16 every 2 epochs, target epoch 40.
+- The 3090 Ti runs V3 from its own epoch-4 snapshot toward 40 (epoch 5 at
+  07:05). Not asked for; stop it with `kill $(cat output-exp/runner.pid);
+  pkill -f "[o]utput-exp/V3 "` on that box if the GPU is wanted.
+- Collected on the Mac under `stylegan/exp/` (git-ignored): every variant's
+  epoch-4 fp16 ONNX, V8's fp32 ONNX, sample grids, box-side eval outputs and
+  contact sheets, 40 rendered frames per variant, the V0 comparisons, both
+  boxes' `summary.md` and `runner.log`, the Figment kernel profiles in
+  `bench_epoch_4.txt`. The table is committed as `stylegan/results_epoch4.md`.
