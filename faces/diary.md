@@ -392,3 +392,20 @@ V4 is the closest to V0 in output (PSNR 25.0 against V0's frames, the
 highest of the set) but saves only 10 % of the MACs. It confirms that the
 skip width is not where the cost sits. 4090 on V6, the last one, since
 05:32; 3090 Ti on V1b.
+
+## 2026-09-03 06:40 (box time) — V1b, 3090 Ti queue finished
+
+| | GMAC | L1 | PSNR | SSIM | vs V0 PSNR / SSIM | box CPU ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| V0 epoch 4 | 214 | 0.110 | 19.84 | 0.633 | | 705 |
+| V1b (`--channel-base 24576`) | 129 | 0.111 | 19.93 | 0.633 | 24.7 / 0.751 | 532 |
+| V1 (`--channel-base 16384`) | 67 | 0.116 | 19.62 | 0.630 | 24.6 / 0.746 | 295 |
+
+- V1b matches V0 on every number at 60 % of the MACs, but its channel
+  counts (48, 96, 192, 384) are not powers of two: 22 min per epoch and
+  20.5 GB, slower to train than V0 itself, and only 25 % faster than V0 on
+  the box CPU where V1 is 2.4× faster. Tensor cores and the WebGPU kernel
+  tiles both like multiples of 32 and 64; the Figment timing will say how
+  much of that penalty carries over.
+- The 3090 Ti's share (V1, V3, V8, V7, V9, V1b) is complete: its runner
+  printed "queue finished" at 06:35. The 4090 is on V6's last epoch.
