@@ -290,3 +290,30 @@ Measured MACs per variant, all matching the plan's predictions:
   the queue 90 s after boot (`crontab -l` shows it; remove it when the
   experiments are over). Monitors reconnect when a box drops off the tailnet.
 - 3090 Ti is on V8 since 01:29, then V7, V9, V1b.
+
+## 2026-09-03 02:40 (box time) — V8 and V2
+
+![V8 (base 16384, additive skips, half encoder) at epoch 4](diary/13_v8_epoch4.jpg)
+
+| | GMAC | L1 | PSNR | SSIM | vs V0 PSNR / SSIM | box CPU ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| V0 epoch 4 | 214 | 0.110 | 19.84 | 0.633 | | 705 |
+| V1 | 67 | 0.116 | 19.62 | 0.630 | 24.6 / 0.746 | 295 |
+| V2 (`--skip add`) | 150 | 0.117 | 19.63 | 0.624 | 24.4 / 0.742 | 531 |
+| V3 | 46 | 0.115 | 19.81 | 0.625 | 24.3 / 0.733 | 235 |
+| V8 | 33 | 0.115 | 19.75 | 0.625 | 24.0 / 0.735 | 181 |
+
+- V8 at a sixth of V0's MACs: the metrics are flat against V3, and the
+  export runs 3.9× faster than V0 on the box CPU. On the grid, rows 1 to 3
+  match V3; the teeth in row 4 are the first thing to smear. The half-width
+  encoder without its 512² conv costs nothing measurable at this epoch: the
+  mesh is thin lines, and the plan's guess that the encoder is oversized
+  holds.
+- V2 (additive skips at full width, trained on the 4090) sits at V1's
+  quality with 2.2× V1's MACs, so the skip change alone is not the lever;
+  it only pays combined with the narrower channel plan.
+- Reading across: all four variants lose 1 to 3 % SSIM against V0 at epoch
+  4, and the losses do not grow with the MAC cut. The channel plan is the
+  cheap dimension; the Mac timings decide between V3 and V8.
+- 3090 Ti on V7 since 02:34, then V9, V1b. 4090 on V5 since 02:31, then
+  V11, V4, V6.
