@@ -4,3 +4,4 @@ diary/
 .venv/
 *.mp4
 *.zip
+stylegan/exp/

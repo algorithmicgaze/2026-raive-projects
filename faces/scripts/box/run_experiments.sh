@@ -64,7 +64,7 @@ for entry in "${VARIANTS[@]}"; do
   name=${entry%%|*}
   flags=${entry#*|}
   dir=$OUT/$name
-  if [ -e "$dir/generator_epoch_${EPOCHS}_fp16.onnx" ] && [ -e "$dir/eval_epoch_${EPOCHS}/metrics.json" ]; then
+  if [ -s "$dir/generator_epoch_${EPOCHS}_fp16.onnx" ] && [ -s "$dir/eval_epoch_${EPOCHS}/metrics.json" ]; then
     continue
   fi
   echo "$(date) === $name: $flags"
@@ -78,8 +78,8 @@ for entry in "${VARIANTS[@]}"; do
   for e in $(seq 2 2 "$EPOCHS"); do
     onnx=$dir/generator_epoch_$e.onnx
     [ -e "$onnx" ] || continue
-    [ -e "$dir/generator_epoch_${e}_fp16.onnx" ] || uv run stylegan/to_fp16.py "$onnx" "$dir/generator_epoch_${e}_fp16.onnx"
-    if [ ! -e "$dir/eval_epoch_$e/metrics.json" ]; then
+    [ -s "$dir/generator_epoch_${e}_fp16.onnx" ] || uv run stylegan/to_fp16.py "$onnx" "$dir/generator_epoch_${e}_fp16.onnx"
+    if [ ! -s "$dir/eval_epoch_$e/metrics.json" ]; then
       ref=""
       [ "$name" != V0 ] && [ -e "$OUT/V0/eval_epoch_$e/metrics.json" ] && ref="--ref $OUT/V0/eval_epoch_$e"
       # shellcheck disable=SC2086

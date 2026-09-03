@@ -22,7 +22,7 @@ TEMPLATE=three_faces_stylegan_inference.fgmt
 
 echo "=== pull from the boxes"
 for remote in "${REMOTES[@]}"; do
-  rsync -aL --info=progress2 \
+  rsync -aL \
     --include='*/' --include="generator_epoch_${EPOCH}_fp16.onnx" --include='variant.txt' \
     --include='training_log.txt' --include='sample_epoch_*.jpg' --include='eval_epoch_*/metrics.json' \
     --include='eval_epoch_*/sheet.jpg' --include='dwbench/*_fp16.onnx' \
@@ -66,6 +66,10 @@ EOF
   fi
 done
 
+if [ ${#projects[@]} -eq 0 ]; then
+  echo "no models pulled, nothing to bench"
+  exit 1
+fi
 echo "=== Figment timing (${#projects[@]} projects)"
 bench_txt=exp/bench_epoch_${EPOCH}.txt
 node "$BENCH_DIR/bench.mjs" "${projects[@]}" | tee "$bench_txt"
@@ -105,5 +109,5 @@ for dir in exp/*/; do
 done
 
 echo "=== results"
-uv run python ../scripts/summarize_experiments.py exp --epoch "$EPOCH" > exp/results.md
+python3 ../scripts/summarize_experiments.py exp --epoch "$EPOCH" > exp/results.md
 cat exp/results.md
