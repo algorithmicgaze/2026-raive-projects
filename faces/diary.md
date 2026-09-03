@@ -524,3 +524,21 @@ their epoch-4 snapshots, snapshot + ONNX + fp16 every 2 epochs. The
 - Files: `stylegan/results_epoch8.md`; on the 4090
   `output-exp/V8/generator_epoch_8_fp16.onnx` (64 MB) is the model to load
   in Figment now. The run continues toward epoch 40.
+
+## 2026-09-03 09:50 (box time) — Runs stopped, boxes pruned
+
+- Both training runs stopped on request: V8 on the 4090 at epoch 16 (its
+  last snapshot), V3 on the 3090 Ti at epoch 12. The `@reboot` crontab
+  lines are removed on both boxes; nothing restarts. GPUs idle.
+- Pruned to one epoch per run, samples, evals and logs kept:
+  4090: V2, V4, V5, V6, V11 at epoch 4, V8 at 16, the pix2pix run at 94.
+  30.8 GB freed, `output-exp` 9.5 GB. 3090 Ti: V1, V1b, V7, V8, V9 at 4,
+  V3 at 12 (fp16 added), V0 at 8. 19.8 GB freed, `output-exp` 8.7 GB.
+- Delivered on the Mac: `stylegan/three_faces_stylegan_v8_epoch_16_fp16.onnx`
+  (64 MB, the Figment model) with its fp32 twin, and two projects,
+  `three_faces_stylegan_v8_inference.fgmt` (test clip) and
+  `three_faces_stylegan_v8_webcam.fgmt` (webcam, Detect Faces tesselation).
+- Lesson relearned: `pkill -f` with a pattern that also appears in the
+  ssh command line kills the shell that runs it. Use `[o]utput-exp/V8/`
+  with a trailing slash or a bracket trick that the calling shell cannot
+  match.
