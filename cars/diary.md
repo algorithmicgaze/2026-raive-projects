@@ -86,3 +86,44 @@ cars cut out and layered). Plan:
    plays; only the density changes.
 4. Figment node: JS + WebGPU, inputs plate, clip library, four numbers;
    the sliders can then be driven by MIDI, hand tracking or sensors.
+
+## 08 The instrument, rush-hour style
+
+Scripts in `instrument/`. Pipeline:
+
+1. `lanes.py`: four lane polygons in plate coordinates, measured from the
+   lane markings with a Hough transform (the lane 3/4 boundary is
+   interpolated from equal lane widths).
+2. Windows of 60 s are decoded at 25 fps, aligned to the plate's
+   reference frame (`plate/stabilize.py --ref --est-scale 0.5`).
+3. `segment.py`: per window a local plate (masked median of the window's
+   own frames, global plate as hint) because cloud cover changes the
+   asphalt tone between windows by more than the threshold. Vehicles are
+   labelled with seeds: strong differences (car bodies) are seeds, weak
+   differences (shadows) join the nearest seed within 30 px, the rest is
+   dropped. Without this, shadows and the hedge shadow along the right
+   barrier link every car in lanes 2 to 4 into one blob.
+4. `harvest.py`: tracks by nearest bottom-centre, exclusive matching,
+   merge and split detection by box overlap, flicker-tolerant taints
+   (a fragment that lives under 15 frames does not count). A clip must
+   enter under the bridge, leave at the bottom or right edge, stay in one
+   lane and never merge with another vehicle. Gaps of a few frames hold
+   the previous cut-out. Crops are colour-matched to the global plate
+   with a low-frequency ratio map.
+5. `play.py`: Python player. Per lane a density 0..1 sets the spawn
+   chance per frame; a clip only starts if it never touches another car
+   in its lane over its whole life. Far cars draw first. Writes an mp4.
+6. `pack_clips.py` + `figment/highway.js`: sprite sheets and manifest,
+   and the Figment node (fork any image node, paste the source; project
+   files store forked node types). Inputs: plate image, manifest, four
+   lane sliders, max rate, gap, seed. Draws on an OffscreenCanvas and
+   uploads to the render target. Steps in real time in the editor, one
+   step per frame on export.
+
+`diary/17_lane_occupancy.png`: per-lane occupancy per second over the
+film. Lane 1 averages 40%, lanes 2 to 4 65 to 70% with flat plateaus
+(stopped traffic). Clips for lanes 2 to 4 only come from the moments in
+between, so the harvest runs over thirteen 60 s windows.
+
+Yield per 60 s window in lane 1: about 10 clips. Lanes 2 to 4: near zero
+in jammed windows, a few in flowing ones.

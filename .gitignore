@@ -8,3 +8,4 @@ dist/
 datasets/
 secrets/*.zip
 output-*/
+__pycache__/
