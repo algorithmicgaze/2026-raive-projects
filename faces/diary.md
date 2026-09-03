@@ -380,3 +380,15 @@ shows a large win on the Apple GPU, V11 is out. 4090 on V4 since 04:23.
   from the rest.
 - 3090 Ti on V1b (the last of its share) since 05:05. 4090 on V4 since
   04:23, then V6.
+
+## 2026-09-03 05:35 (box time) — V4
+
+| | GMAC | L1 | PSNR | SSIM | vs V0 PSNR / SSIM | box CPU ms |
+| --- | --- | --- | --- | --- | --- | --- |
+| V0 epoch 4 | 214 | 0.110 | 19.84 | 0.633 | | 705 |
+| V4 (narrow concat skips) | 193 | 0.113 | 19.75 | 0.628 | 25.0 / 0.751 | 545 |
+
+V4 is the closest to V0 in output (PSNR 25.0 against V0's frames, the
+highest of the set) but saves only 10 % of the MACs. It confirms that the
+skip width is not where the cost sits. 4090 on V6, the last one, since
+05:32; 3090 Ti on V1b.
