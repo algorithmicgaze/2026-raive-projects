@@ -479,8 +479,10 @@ function draw(plate) {
     const b = c.clip.boxes[i];
     const j = Math.floor(i / (c.clip.sub || 1)); // stored frame
     const [cw, ch] = c.clip.cell;
-    const sx = (j % c.clip.cols) * cw;
-    const sy = Math.floor(j / c.clip.cols) * ch;
+    // New masks use compact variable-size shelves; older atlases use a grid.
+    const rect = c.clip.frameRects?.[j];
+    const sx = rect ? rect[0] : (j % c.clip.cols) * cw;
+    const sy = rect ? rect[1] : Math.floor(j / c.clip.cols) * ch;
     if (laneMasks) drawMasked(c.clip.sheet, sx, sy, b, c.clip.lane - 1, a);
     else {
       ctx.globalAlpha = a;

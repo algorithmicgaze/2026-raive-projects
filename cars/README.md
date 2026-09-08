@@ -8,7 +8,8 @@ in each lane with sliders or webcam hand tracking.
 - `plate/`: stabilize extracted video frames and build a clean road background.
 - `instrument/`: extract vehicle/train clips, pack them, and generate Figment patches.
 - `instrument/figment/`: the Highway renderer and Hand Keys controller.
-- `instrument/repair_library/`: repair and check the extracted clip library.
+- `instrument/masking/`: rebuild car masks and contact shadows from stabilized footage.
+- `instrument/repair_library/`: earlier AI appearance-repair experiments and retained tracks.
 - `piano-keys/` and `piano-roll/`: related Figment keyboard and falling-bar experiments.
 
 ## What you need and how to run
@@ -23,6 +24,7 @@ To rebuild the assets, you need a **highway video**, extracted frames, **Python
 3.11+**, **uv** and **FFmpeg**. Run scripts from `cars/` using `uv run`; standalone
 scripts declare their Python dependencies. The road masks and lane coordinates
 are specific to the workshop footage and need adjusting for another camera view.
-See the script arguments and [repair guide](instrument/repair_library/README.md).
+See the [masking guide](instrument/masking/README.md) for the current process,
+and the [repair guide](instrument/repair_library/README.md) for earlier experiments.
 
 Footage and generated assets are excluded from Git. See [asset locations](../ASSETS.md).
