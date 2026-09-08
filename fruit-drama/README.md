@@ -1,74 +1,33 @@
-# Fruit Drama generator
+# Fruit Drama — Brain Rot characters
 
-Realtime fruit-drama characters driven by a webcam. See `STRATEGY.md` for the
-plan. The working log and media are in the private Brain Rot share.
+Turn body movement into animated fruit characters. The project combines video
+generation, pose conditioning and image-to-image models for live use in Figment.
+It belongs to the **Brain Rot** group.
 
-All heavy work runs on the 4090 box (`CLAUDE.md`). Paths below are relative to
-this directory on that box.
+## Components
 
-## Scripts
+- `brainrot_figment/brainrot_inference.fgmt`: current pose-driven character demo.
+- `inference.fgmt`, `train.fgmt`, `create-skeleton-video.fgmt`: other live inference,
+  paired-data capture and skeleton-video workflows.
+- `scripts/`: generate clips, extract poses, build image pairs, train pix2pix/HD
+  models and check/convert ONNX exports.
+- `jobs_*.json`, `scenes.json`, `prompts.md`: generation inputs and scene descriptions.
+- `figment/`: custom node code, application patches and benchmark helpers.
 
-| Script | What it does |
-| --- | --- |
-| `scripts/generate_clips.py` | Wan 2.2 TI2V-5B Turbo, text-to-video or image-to-video, single job or a `jobs_*.json` batch. Output 704×1280, 121 frames, 24 fps. |
-| `scripts/render_conditioning.py` | MediaPipe pose + face drawn the way Figment draws them. Writes `[target \| input]` pairs, a per-frame CSV and a stats JSON. |
-| `scripts/train_pix2pix.py` | pix2pix (CCM recipe from `figmentapp/pix2pix`) on a pairs folder. Exports ONNX at each snapshot. |
-| `scripts/check_onnx.py` | Runs an exported ONNX with onnxruntime. Prints the input shape Figment reads. |
-| `scripts/box/restart_download.sh` | Restarts the model download. Xet disabled: it stalls on this network. |
-| `scripts/video_to_openpose.py` | OpenPose detector render of the human frames of a control clip. VACE follows this drawing, not ours. |
-| `scripts/box/runpod_setup.sh` | Fresh RunPod pod: env, clone, `uv sync`, task files, both Wan models. `ssh runpod-4090 'bash -s' < scripts/box/runpod_setup.sh` |
-| `scripts/box/generate_when_ready.sh` | Waits for the model and a free GPU, then runs all job lists. |
-| `scripts/box/pipeline_after_generation.sh` | Waits for the clips, builds `media/dataset_pineapple`, trains a model. |
+## What you need and how to run
 
-## Typical run
+For the current demo, you need **Figment**, a **webcam** and
+`generator_epoch_700_fp16.onnx` from **Brain Rot/brainrot_figment** in the private
+share. Keep the model beside `brainrot_inference.fgmt`, open it and allow camera
+access. The connected output uses the webcam; its separate Load Movie branch is
+unused, so **no video file is needed for this demo**.
 
-```bash
-# 1. clips
-uv run scripts/generate_clips.py batch jobs_pineapple_i2v.json
+To build training data, supply **source videos** or generate character clips from
+prompts (image-to-video jobs also need their referenced **still images**). The
+capture patches require selecting a video in Load Movie. Training needs paired
+target/conditioning images, **Python 3.12**, **uv**, **FFmpeg**, downloaded generation
+models where applicable, and a **CUDA-capable GPU**. There is no supplied Brain Rot
+PTH checkpoint for resuming the workshop run.
 
-# 2. conditioning + pairs (512x768 per half, frames without a pose skipped)
-uv run scripts/render_conditioning.py media/clips/pineapple_01.mp4 media/dataset_pineapple \
-    --size 512x768 --skip-empty --prefix pineapple_01_ --num-poses 1 --num-faces 1
-
-# 3. train
-uv run scripts/train_pix2pix.py media/dataset_pineapple/pairs media/train_pineapple --epochs 100 --batch-size 8
-
-# 4. check the ONNX
-uv run scripts/check_onnx.py media/train_pineapple/generator_epoch_100.onnx media/dataset_pineapple/pairs/pineapple_01_00010.jpg out.jpg --pair
-```
-
-## Figment
-
-`inference.fgmt`: Webcam → Crop 480×720 → Resize 512×768 → Detect Pose +
-Detect Faces → Composite (lighten) → ONNX Image Model → Stack → Out.
-Copy the trained ONNX next to it as `generator.onnx`.
-
-`train.fgmt` is the original Figment-only dataset network (Load Movie →
-detect → stack → save). `render_conditioning.py` does the same on the box.
-
-## Rules learned
-
-- Training frames need one character, frontal, full body, medium or wide
-  shot. MediaPipe finds nothing in crowded fruit group shots.
-- Sides must divide by 256 (U-Net with 8 down-samplings). Portrait: 512×768.
-- Crop to 2:3 *before* detection. Do the same crop in Figment.
-
-## Human driving videos
-
-Put videos of one person moving (full body, facing the camera) in
-`media/driving/` on the box, then:
-
-```bash
-bash scripts/box/driving_to_control.sh      # MediaPipe landmarks, 81-frame clips, OpenPose control clips
-uv run scripts/make_jobs.py vace 2          # 2 control clips per scene
-uv run scripts/generate_vace.py batch jobs_vace.json
-uv run scripts/build_pairs.py media/dataset_vace jobs_vace.json   # exact pairs, no detection
-```
-
-## After a network drop or reboot
-
-```bash
-bash scripts/box/recover.sh
-```
-Restarts the download if needed, restarts the waiters, resumes pix2pixHD
-training from its last snapshot.
+See [the training and generation guide](RUNNING.md), [the project plan](STRATEGY.md)
+and [private asset locations](../ASSETS.md).
