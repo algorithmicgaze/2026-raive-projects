@@ -1,4 +1,6 @@
-# RAIVE 2026 — creative technology source
+# RAIVE 2026 AI Summer School
+
+📍 [raive.school](https://raive.school)
 
 Reusable code from the week-long RAIVE summer school: image-to-image training,
 ONNX inference in Figment, interactive instruments, audio emotion analysis and
