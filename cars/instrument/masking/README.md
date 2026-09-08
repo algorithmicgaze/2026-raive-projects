@@ -13,7 +13,7 @@ Keep these private assets under a Cars folder:
 
 - `media/highway-stabilized-1080p.mp4`: the complete 1080p, 25 fps recording.
 - `output-figment/plate.png` and the original `manifest.json`.
-- `output-figment/repaired/jobs/*/{job,motion,detections}.json`: retained tracks.
+- `output-figment/masked/tracking/*/{job,motion,detections}.json`: retained tracks.
 - `output-clips/` and `output-clips-groups/` metadata (`meta.json`).
 - A SAM 2.1 Base checkpoint, `sam2.1_b.pt`. No new training is required.
 
@@ -65,8 +65,7 @@ lane borrowing. Live webcam input is not part of this check.
 only the embedded Highway code and manifest path in `highway.fgmt` and
 `highway-hands.fgmt`. Runnable `*-original-backup.fgmt` files stay alongside them,
 referencing the untouched original `manifest.json` and `clips/`. Other controls,
-connections and node layout remain unchanged. AI-repaired project variants are
-retained separately as older alternatives.
+connections and node layout remain unchanged.
 
 ## Data format and limits
 

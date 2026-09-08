@@ -31,7 +31,7 @@ hand_source = (here / "figment" / "handKeys.js").read_text()
 types = [{"name": "Highway", "type": "project.highway", "source": source},
          {"name": "Hand Keys", "type": "project.handKeys", "source": hand_source}]
 highway_values = {
-    "manifest": {"type": "value", "value": "manifest-masked.json" if (out / "manifest-masked.json").exists() else ("manifest-repaired.json" if (out / "manifest-repaired.json").exists() else "manifest.json")},
+    "manifest": {"type": "value", "value": "manifest-masked.json" if (out / "manifest-masked.json").exists() else "manifest.json"},
     "trains": {"type": "value", "value": "trains/trains.json"},
     "plate": {"type": "value", "value": "plate.png"},
 }

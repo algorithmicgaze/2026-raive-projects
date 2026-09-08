@@ -4,7 +4,7 @@
 # ///
 """Rebuild source-derived vehicle masks and contact shadows from the 1080p master.
 
-Read-only inputs: original manifest, repaired/jobs tracking metadata and source video.
+Read-only inputs: original manifest, masked/tracking tracking metadata and source video.
 Outputs go to output-figment/masked; existing project files are not changed.
 """
 
@@ -296,7 +296,7 @@ def corrected_prompts(track, motion):
 
 def prepare(root, c):
     jid = Path(c["sheet"]).stem
-    jobroot = root / "output-figment/repaired/jobs" / jid
+    jobroot = root / "output-figment/masked/tracking" / jid
     job = json.loads((jobroot / "job.json").read_text())
     meta_path = Path(job["source_meta"])
     meta = (
