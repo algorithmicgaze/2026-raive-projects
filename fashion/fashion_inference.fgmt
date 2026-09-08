@@ -1,0 +1,131 @@
+{
+  "version": 6,
+  "nodes": [
+    {
+      "id": 5,
+      "name": "Stack",
+      "type": "image.stack",
+      "x": 149.03220896411685,
+      "y": 599.7677695486199
+    },
+    {
+      "id": 6,
+      "name": "Out",
+      "type": "core.out",
+      "x": 100.89942464807592,
+      "y": 678.6177246748568
+    },
+    {
+      "id": 7,
+      "name": "Webcam Image",
+      "type": "image.webcamImage",
+      "x": 397,
+      "y": 73
+    },
+    {
+      "id": 8,
+      "name": "Detect Pose",
+      "type": "ml.detectPose",
+      "x": 439.13943714662224,
+      "y": 296.6095039476363,
+      "values": {
+        "model": {
+          "type": "value",
+          "value": "heavy"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "Resize",
+      "type": "image.resize",
+      "x": 424.6303721739796,
+      "y": 222.9386348736525
+    },
+    {
+      "id": 10,
+      "name": "ONNX Image Model",
+      "type": "ml.onnxImageModel",
+      "x": 465.1044813373959,
+      "y": 441.1300240657452,
+      "values": {
+        "model": {
+          "type": "value",
+          "value": "finetune_epoch_6600_fp16.onnx"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "Composite",
+      "type": "image.composite",
+      "x": 332.8177715586307,
+      "y": 510.1812551085518,
+      "values": {
+        "factor": {
+          "type": "value",
+          "value": 1
+        },
+        "operation": {
+          "type": "value",
+          "value": "lighten"
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "outNode": 5,
+      "outPort": "out",
+      "inNode": 6,
+      "inPort": "in"
+    },
+    {
+      "outNode": 7,
+      "outPort": "image",
+      "inNode": 9,
+      "inPort": "in"
+    },
+    {
+      "outNode": 9,
+      "outPort": "out",
+      "inNode": 8,
+      "inPort": "in"
+    },
+    {
+      "outNode": 8,
+      "outPort": "out",
+      "inNode": 10,
+      "inPort": "in"
+    },
+    {
+      "outNode": 9,
+      "outPort": "out",
+      "inNode": 11,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 8,
+      "outPort": "out",
+      "inNode": 11,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 11,
+      "outPort": "out",
+      "inNode": 5,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 10,
+      "outPort": "out",
+      "inNode": 5,
+      "inPort": "image 2"
+    }
+  ],
+  "settings": {
+    "oscEnabled": false,
+    "oscPort": 8000
+  },
+  "types": []
+}

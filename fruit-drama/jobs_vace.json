@@ -1,0 +1,122 @@
+[
+ {
+  "scene": "pineapple_hallway",
+  "background": "#400d0d",
+  "seed": 2000,
+  "image": "media/refs/pineapple_hallway.png",
+  "control": "media/control/myrthe_000.mp4",
+  "landmarks": "media/control/myrthe_000.landmarks.jsonl",
+  "out": "media/clips_vace/pineapple_hallway__myrthe_000.mp4",
+  "prompt": "a tall pineapple woman with a green leafy crown, emerald off-shoulder evening gown, pearl necklace, long lashes, a grand marble hotel hallway under a crystal chandelier, sunset light through tall windows. Shock expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "broccoli_penthouse",
+  "background": "#40260d",
+  "seed": 2010,
+  "image": "media/refs/broccoli_penthouse.png",
+  "control": "media/control/myrthe_001.mp4",
+  "landmarks": "media/control/myrthe_001.landmarks.jsonl",
+  "out": "media/clips_vace/broccoli_penthouse__myrthe_001.mp4",
+  "prompt": "an elderly broccoli woman with a dense green floret head, ivory silk robe, pearl necklace, reading glasses on a chain, a luxurious penthouse living room at night, floor-to-ceiling windows, city skyline, warm lamps. Anger expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "apple_ceo_office",
+  "background": "#40400d",
+  "seed": 2020,
+  "image": "media/refs/apple_ceo_office.png",
+  "control": "media/control/myrthe_002.mp4",
+  "landmarks": "media/control/myrthe_002.landmarks.jsonl",
+  "out": "media/clips_vace/apple_ceo_office__myrthe_002.mp4",
+  "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "cherry_gate_rain",
+  "background": "#26400d",
+  "seed": 2030,
+  "image": "media/refs/cherry_gate_rain.png",
+  "control": "media/control/myrthe_003.mp4",
+  "landmarks": "media/control/myrthe_003.landmarks.jsonl",
+  "out": "media/clips_vace/cherry_gate_rain__myrthe_003.mp4",
+  "prompt": "a dark cherry woman with a long stem, red satin dress, diamond necklace, mascara running, outside a mansion gate at night in the rain, wet asphalt reflections, a suitcase at the feet. Grief expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "grape_courtroom",
+  "background": "#0d400d",
+  "seed": 2040,
+  "image": "media/refs/grape_courtroom.png",
+  "control": "media/control/myrthe_004.mp4",
+  "landmarks": "media/control/myrthe_004.landmarks.jsonl",
+  "out": "media/clips_vace/grape_courtroom__myrthe_004.mp4",
+  "prompt": "a tall purple grape man made of glossy grapes, tailored black suit, slicked hair, thin smile, a courtroom with wood panels and a harsh overhead light. Smug expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "banana_kitchen",
+  "background": "#0d4026",
+  "seed": 2050,
+  "image": "media/refs/banana_kitchen.png",
+  "control": "media/control/myrthe_005.mp4",
+  "landmarks": "media/control/myrthe_005.landmarks.jsonl",
+  "out": "media/clips_vace/banana_kitchen__myrthe_005.mp4",
+  "prompt": "a stern banana woman with a tight bun, beige cardigan, brooch, thin-rimmed glasses, a mansion kitchen at breakfast, marble island, morning sun through the window. Anger expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "lemon_hospital",
+  "background": "#0d4040",
+  "seed": 2060,
+  "image": "media/refs/lemon_hospital.png",
+  "control": "media/control/myrthe_006.mp4",
+  "landmarks": "media/control/myrthe_006.landmarks.jsonl",
+  "out": "media/clips_vace/lemon_hospital__myrthe_006.mp4",
+  "prompt": "a nervous lemon man, grey suit, loosened tie, sweat drops on the peel, a hospital corridor with cold fluorescent light and rain on the windows. Guilt expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "apple_boy_school",
+  "background": "#0d2640",
+  "seed": 2070,
+  "image": "media/refs/apple_boy_school.png",
+  "control": "media/control/myrthe_007.mp4",
+  "landmarks": "media/control/myrthe_007.landmarks.jsonl",
+  "out": "media/clips_vace/apple_boy_school__myrthe_007.mp4",
+  "prompt": "a small red apple boy, navy school blazer with a crest, striped tie, grey shorts, white socks, a school hallway with lockers and a trophy cabinet, afternoon light. Grief expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "strawberry_bedroom",
+  "background": "#0d0d40",
+  "seed": 2080,
+  "image": "media/refs/strawberry_bedroom.png",
+  "control": "media/control/myrthe_008.mp4",
+  "landmarks": "media/control/myrthe_008.landmarks.jsonl",
+  "out": "media/clips_vace/strawberry_bedroom__myrthe_008.mp4",
+  "prompt": "a teenage strawberry girl with a green leaf fringe, pink hoodie, headphones around the neck, a teenage bedroom with posters, fairy lights and a messy desk. Anger expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "watermelon_police",
+  "background": "#260d40",
+  "seed": 2090,
+  "image": "media/refs/watermelon_police.png",
+  "control": "media/control/myrthe_009.mp4",
+  "landmarks": "media/control/myrthe_009.landmarks.jsonl",
+  "out": "media/clips_vace/watermelon_police__myrthe_009.mp4",
+  "prompt": "a large watermelon police officer with a green striped rind, navy uniform, badge, cap, a hotel lobby with a marble floor, a reception desk and gold lamps. Smug expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "orange_waiter",
+  "background": "#400d40",
+  "seed": 2100,
+  "image": "media/refs/orange_waiter.png",
+  "control": "media/control/myrthe_010.mp4",
+  "landmarks": "media/control/myrthe_010.landmarks.jsonl",
+  "out": "media/clips_vace/orange_waiter__myrthe_010.mp4",
+  "prompt": "an orange waiter with a shiny dimpled peel, white shirt, black bow tie, black apron, a tray in one hand, a rooftop restaurant at golden hour, white tablecloths, candles, city skyline. Shock expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "scene": "avocado_doctor",
+  "background": "#400d26",
+  "seed": 2110,
+  "image": "media/refs/avocado_doctor.png",
+  "control": "media/control/myrthe_011.mp4",
+  "landmarks": "media/control/myrthe_011.landmarks.jsonl",
+  "out": "media/clips_vace/avocado_doctor__myrthe_011.mp4",
+  "prompt": "an avocado doctor with a dark bumpy skin, white coat, stethoscope, clipboard, a bright hospital room with a bed, monitors and a window. Shock expression. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ }
+]

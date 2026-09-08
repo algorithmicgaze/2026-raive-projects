@@ -1,0 +1,99 @@
+{
+  "version": 6,
+  "nodes": [
+    {
+      "id": 6,
+      "name": "Out",
+      "type": "core.out",
+      "x": 178.7002912861414,
+      "y": 241.9926100236029
+    },
+    {
+      "id": 7,
+      "name": "Webcam Image",
+      "type": "image.webcamImage",
+      "x": 196.05795388647644,
+      "y": 39.84813584330985,
+      "values": {
+        "camera": {
+          "type": "value",
+          "value": "HD Pro Webcam C920 (046d:082d)"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "Detect Hands",
+      "type": "ml.detectHands",
+      "x": 199.8090117664248,
+      "y": 105.22433181983429,
+      "values": {
+        "smoothing": {
+          "type": "value",
+          "value": 0.6
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "Composite",
+      "type": "image.composite",
+      "x": 182.61299078068598,
+      "y": 170.94894471074008,
+      "values": {
+        "factor": {
+          "type": "value",
+          "value": 1
+        },
+        "operation": {
+          "type": "value",
+          "value": "lighten"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "Send OSC",
+      "type": "comms.sendOsc",
+      "x": 291.8970486912519,
+      "y": 195.6789536513607
+    }
+  ],
+  "connections": [
+    {
+      "outNode": 7,
+      "outPort": "image",
+      "inNode": 8,
+      "inPort": "in"
+    },
+    {
+      "outNode": 7,
+      "outPort": "image",
+      "inNode": 9,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 8,
+      "outPort": "out",
+      "inNode": 9,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 9,
+      "outPort": "out",
+      "inNode": 6,
+      "inPort": "in"
+    },
+    {
+      "outNode": 8,
+      "outPort": "landmarks",
+      "inNode": 10,
+      "inPort": "value"
+    }
+  ],
+  "settings": {
+    "oscEnabled": false,
+    "oscPort": 8000
+  },
+  "types": []
+}

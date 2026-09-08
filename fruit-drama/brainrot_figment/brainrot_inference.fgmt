@@ -1,0 +1,175 @@
+{
+  "version": 6,
+  "nodes": [
+    {
+      "id": 1,
+      "name": "Load Movie",
+      "type": "image.loadMovie",
+      "x": 100,
+      "y": 50,
+      "values": {
+        "file": {
+          "type": "value",
+          "value": "/Applications/Figment.app/Contents/Resources/app.asar/examples/assets/waves.mp4"
+        }
+      }
+    },
+    {
+      "id": 2,
+      "name": "Resize",
+      "type": "image.resize",
+      "x": 100,
+      "y": 150
+    },
+    {
+      "id": 5,
+      "name": "Stack",
+      "type": "image.stack",
+      "x": 474.6269500088196,
+      "y": 634.15650632456
+    },
+    {
+      "id": 6,
+      "name": "Out",
+      "type": "core.out",
+      "x": 511.45825127373166,
+      "y": 797.2958799215526
+    },
+    {
+      "id": 7,
+      "name": "Webcam Image",
+      "type": "image.webcamImage",
+      "x": 508,
+      "y": 137
+    },
+    {
+      "id": 8,
+      "name": "Resize",
+      "type": "image.resize",
+      "x": 573,
+      "y": 294
+    },
+    {
+      "id": 9,
+      "name": "Detect Pose",
+      "type": "ml.detectPose",
+      "x": 591.2731244506937,
+      "y": 410,
+      "values": {
+        "points color": {
+          "type": "value",
+          "value": [
+            255,
+            0,
+            0,
+            1
+          ]
+        },
+        "lines color": {
+          "type": "value",
+          "value": [
+            255,
+            0,
+            0,
+            1
+          ]
+        },
+        "model": {
+          "type": "value",
+          "value": "heavy"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "ONNX Image Model",
+      "type": "ml.onnxImageModel",
+      "x": 635,
+      "y": 573,
+      "values": {
+        "model": {
+          "type": "value",
+          "value": "generator_epoch_700_fp16.onnx"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "Composite",
+      "type": "image.composite",
+      "x": 501,
+      "y": 520,
+      "values": {
+        "factor": {
+          "type": "value",
+          "value": 1
+        },
+        "operation": {
+          "type": "value",
+          "value": "difference"
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "outNode": 1,
+      "outPort": "out",
+      "inNode": 2,
+      "inPort": "in"
+    },
+    {
+      "outNode": 5,
+      "outPort": "out",
+      "inNode": 6,
+      "inPort": "in"
+    },
+    {
+      "outNode": 7,
+      "outPort": "image",
+      "inNode": 8,
+      "inPort": "in"
+    },
+    {
+      "outNode": 8,
+      "outPort": "out",
+      "inNode": 9,
+      "inPort": "in"
+    },
+    {
+      "outNode": 8,
+      "outPort": "out",
+      "inNode": 11,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 11,
+      "outPort": "out",
+      "inNode": 5,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 10,
+      "outPort": "out",
+      "inNode": 5,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 9,
+      "outPort": "out",
+      "inNode": 11,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 9,
+      "outPort": "out",
+      "inNode": 10,
+      "inPort": "in"
+    }
+  ],
+  "settings": {
+    "oscEnabled": false,
+    "oscPort": 8000
+  },
+  "types": []
+}

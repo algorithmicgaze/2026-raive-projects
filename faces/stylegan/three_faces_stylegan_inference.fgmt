@@ -1,0 +1,61 @@
+{
+  "version": 6,
+  "nodes": [
+    {
+      "id": 6,
+      "name": "Out",
+      "type": "core.out",
+      "x": 333.24564784333313,
+      "y": 416.40530587954066
+    },
+    {
+      "id": 10,
+      "name": "ONNX Image Model",
+      "type": "ml.onnxImageModel",
+      "x": 331.39340610311285,
+      "y": 322.94131134349476,
+      "values": {
+        "model": {
+          "type": "value",
+          "value": "three_faces_stylegan_epoch_8.onnx"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "Load Movie",
+      "type": "image.loadMovie",
+      "x": 343.8926866142958,
+      "y": 234.37190442156617,
+      "values": {
+        "file": {
+          "type": "value",
+          "value": "right_11860-12098_50fps.mp4"
+        },
+        "quality": {
+          "type": "value",
+          "value": "accurate"
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "outNode": 10,
+      "outPort": "out",
+      "inNode": 6,
+      "inPort": "in"
+    },
+    {
+      "outNode": 12,
+      "outPort": "out",
+      "inNode": 10,
+      "inPort": "in"
+    }
+  ],
+  "settings": {
+    "oscEnabled": false,
+    "oscPort": 8000
+  },
+  "types": []
+}

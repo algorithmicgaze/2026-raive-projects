@@ -1,0 +1,4 @@
+export/
+*.webm
+.venv/
+*.onnx

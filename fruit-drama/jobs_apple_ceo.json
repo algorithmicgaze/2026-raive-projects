@@ -1,0 +1,14 @@
+[
+  {"mode": "i2v", "image": "fruit-drama-apple-ceo.png", "out": "media/clips/apple_ceo_01.mp4", "seed": 1,
+   "prompt": "A red apple man in a black suit sits at a rooftop restaurant table at golden hour opposite a dark cherry woman in a red satin dress. He looks down at his phone, smiles, then hides it under the table. She narrows her eyes."},
+  {"mode": "i2v", "image": "fruit-drama-apple-ceo.png", "out": "media/clips/apple_ceo_02.mp4", "seed": 2,
+   "prompt": "A red apple man in a black suit and a dark cherry woman in a red satin dress at a candlelit restaurant table. She gasps, raises her hand to her chest, and leans back. He raises both hands in defense."},
+  {"mode": "i2v", "image": "fruit-drama-apple-ceo.png", "out": "media/clips/apple_ceo_03.mp4", "seed": 3,
+   "prompt": "A red apple man in a black suit at a restaurant table. He turns his head slowly toward the camera and narrows his eyes. The dark cherry woman crosses her arms and taps her fingers on the table, glaring."},
+  {"mode": "i2v", "image": "fruit-drama-apple-ceo.png", "out": "media/clips/apple_ceo_04.mp4", "seed": 4,
+   "prompt": "A dark cherry woman in a red satin dress stands up from the restaurant table and points accusingly at the red apple man in a black suit. He leans back, shocked, mouth open."},
+  {"mode": "i2v", "image": "fruit-drama-apple-ceo.png", "out": "media/clips/apple_ceo_05.mp4", "seed": 5,
+   "prompt": "A red apple man in a black suit slams his fist on the restaurant table, then sits back and adjusts his tie. The dark cherry woman wipes a tear and lifts her chin."},
+  {"mode": "i2v", "image": "fruit-drama-apple-ceo.png", "out": "media/clips/apple_ceo_06.mp4", "seed": 6,
+   "prompt": "Slow camera push-in on a red apple man in a black suit and a dark cherry woman in a red satin dress at a golden hour restaurant table. She covers her mouth with both hands, eyes wide. He looks away, guilty."}
+]

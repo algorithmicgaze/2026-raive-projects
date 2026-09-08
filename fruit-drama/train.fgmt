@@ -1,0 +1,148 @@
+{
+  "version": 6,
+  "nodes": [
+    {
+      "id": 7,
+      "name": "Load Movie",
+      "type": "image.loadMovie",
+      "x": 436,
+      "y": 170,
+      "values": {
+        "file": {
+          "type": "value",
+          "value": "fruit-drama-apple-ceo.webm"
+        },
+        "quality": {
+          "type": "value",
+          "value": "accurate"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "name": "Detect Pose",
+      "type": "ml.detectPose",
+      "x": 516.4136786277189,
+      "y": 238.89040550560821,
+      "values": {
+        "number of poses": {
+          "type": "value",
+          "value": 2
+        },
+        "model": {
+          "type": "value",
+          "value": "heavy"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "Detect Faces",
+      "type": "ml.detectFaces",
+      "x": 425.15371963394864,
+      "y": 298.77665750127034,
+      "values": {
+        "number of faces": {
+          "type": "value",
+          "value": 2
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "Composite",
+      "type": "image.composite",
+      "x": 464.4424213101798,
+      "y": 384.05667069113935,
+      "values": {
+        "factor": {
+          "type": "value",
+          "value": 1
+        },
+        "operation": {
+          "type": "value",
+          "value": "lighten"
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "Stack",
+      "type": "image.stack",
+      "x": 447.9462228648924,
+      "y": 456.65222258893635
+    },
+    {
+      "id": 12,
+      "name": "Save Image",
+      "type": "image.saveImage",
+      "x": 429.8248292757947,
+      "y": 559.0065703384615,
+      "values": {
+        "folder": {
+          "type": "value",
+          "value": "export"
+        },
+        "template": {
+          "type": "value",
+          "value": "image-#####.jpg"
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "outNode": 7,
+      "outPort": "out",
+      "inNode": 8,
+      "inPort": "in"
+    },
+    {
+      "outNode": 7,
+      "outPort": "out",
+      "inNode": 9,
+      "inPort": "in"
+    },
+    {
+      "outNode": 8,
+      "outPort": "out",
+      "inNode": 10,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 9,
+      "outPort": "out",
+      "inNode": 10,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 7,
+      "outPort": "out",
+      "inNode": 11,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 10,
+      "outPort": "out",
+      "inNode": 11,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 11,
+      "outPort": "out",
+      "inNode": 12,
+      "inPort": "in"
+    },
+    {
+      "outNode": 8,
+      "outPort": "detected",
+      "inNode": 12,
+      "inPort": "enable"
+    }
+  ],
+  "settings": {
+    "oscEnabled": false,
+    "oscPort": 8000
+  },
+  "types": []
+}

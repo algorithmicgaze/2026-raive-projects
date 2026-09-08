@@ -1,0 +1,192 @@
+{
+  "version": 6,
+  "nodes": [
+    {
+      "id": 6,
+      "name": "Out",
+      "type": "core.out",
+      "x": -98.7174870035061,
+      "y": 658.1924325184872
+    },
+    {
+      "id": 7,
+      "name": "Webcam Image",
+      "type": "image.webcamImage",
+      "x": -93,
+      "y": 67
+    },
+    {
+      "id": 8,
+      "name": "Detect Pose",
+      "type": "ml.detectPose",
+      "x": -93,
+      "y": 188.0045101402046,
+      "values": {
+        "coloring": {
+          "type": "value",
+          "value": "per limb"
+        },
+        "number of poses": {
+          "type": "value",
+          "value": 1
+        },
+        "model": {
+          "type": "value",
+          "value": "heavy"
+        },
+        "smoothing": {
+          "type": "value",
+          "value": 0.65
+        }
+      }
+    },
+    {
+      "id": 9,
+      "name": "Detect Hands",
+      "type": "ml.detectHands",
+      "x": 84.75191900663857,
+      "y": 209,
+      "values": {
+        "coloring": {
+          "type": "value",
+          "value": "per finger"
+        },
+        "smoothing": {
+          "type": "value",
+          "value": 0.3
+        }
+      }
+    },
+    {
+      "id": 10,
+      "name": "Detect Faces",
+      "type": "ml.detectFaces",
+      "x": 263,
+      "y": 208,
+      "values": {
+        "smoothing": {
+          "type": "value",
+          "value": 0.65
+        }
+      }
+    },
+    {
+      "id": 11,
+      "name": "Composite",
+      "type": "image.composite",
+      "x": -65,
+      "y": 307,
+      "values": {
+        "factor": {
+          "type": "value",
+          "value": 1
+        },
+        "operation": {
+          "type": "value",
+          "value": "lighten"
+        }
+      }
+    },
+    {
+      "id": 12,
+      "name": "Composite",
+      "type": "image.composite",
+      "x": -44,
+      "y": 427,
+      "values": {
+        "factor": {
+          "type": "value",
+          "value": 1
+        },
+        "operation": {
+          "type": "value",
+          "value": "lighten"
+        }
+      }
+    },
+    {
+      "id": 13,
+      "name": "Composite",
+      "type": "image.composite",
+      "x": -206.7534772861973,
+      "y": 511.9571314449978,
+      "values": {
+        "factor": {
+          "type": "value",
+          "value": 1
+        },
+        "operation": {
+          "type": "value",
+          "value": "difference"
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "outNode": 7,
+      "outPort": "image",
+      "inNode": 8,
+      "inPort": "in"
+    },
+    {
+      "outNode": 7,
+      "outPort": "image",
+      "inNode": 9,
+      "inPort": "in"
+    },
+    {
+      "outNode": 7,
+      "outPort": "image",
+      "inNode": 10,
+      "inPort": "in"
+    },
+    {
+      "outNode": 8,
+      "outPort": "out",
+      "inNode": 11,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 9,
+      "outPort": "out",
+      "inNode": 11,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 11,
+      "outPort": "out",
+      "inNode": 12,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 10,
+      "outPort": "out",
+      "inNode": 12,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 7,
+      "outPort": "image",
+      "inNode": 13,
+      "inPort": "image 1"
+    },
+    {
+      "outNode": 12,
+      "outPort": "out",
+      "inNode": 13,
+      "inPort": "image 2"
+    },
+    {
+      "outNode": 13,
+      "outPort": "out",
+      "inNode": 6,
+      "inPort": "in"
+    }
+  ],
+  "settings": {
+    "oscEnabled": false,
+    "oscPort": 8000
+  },
+  "types": []
+}

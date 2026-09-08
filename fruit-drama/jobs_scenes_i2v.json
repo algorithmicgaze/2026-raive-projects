@@ -1,0 +1,434 @@
+[
+ {
+  "mode": "i2v",
+  "scene": "pineapple_hallway",
+  "background": "#400d0d",
+  "seed": 1000,
+  "image": "media/refs/pineapple_hallway.png",
+  "out": "media/clips/pineapple_hallway_00.mp4",
+  "prompt": "a tall pineapple woman with a green leafy crown, emerald off-shoulder evening gown, pearl necklace, long lashes, a grand marble hotel hallway under a crystal chandelier, sunset light through tall windows. Shock expression. The character gasps, raises one hand to the chest and takes one step back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "pineapple_hallway",
+  "background": "#400d0d",
+  "seed": 1001,
+  "image": "media/refs/pineapple_hallway.png",
+  "out": "media/clips/pineapple_hallway_01.mp4",
+  "prompt": "a tall pineapple woman with a green leafy crown, emerald off-shoulder evening gown, pearl necklace, long lashes, a grand marble hotel hallway under a crystal chandelier, sunset light through tall windows. Shock expression. The character covers the mouth with both hands, eyes wide, then slowly lowers them. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "pineapple_hallway",
+  "background": "#400d0d",
+  "seed": 1002,
+  "image": "media/refs/pineapple_hallway.png",
+  "out": "media/clips/pineapple_hallway_02.mp4",
+  "prompt": "a tall pineapple woman with a green leafy crown, emerald off-shoulder evening gown, pearl necklace, long lashes, a grand marble hotel hallway under a crystal chandelier, sunset light through tall windows. Shock expression. The character raises both hands in shock, then puts one hand on the hip. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "pineapple_hallway",
+  "background": "#400d0d",
+  "seed": 1003,
+  "image": "media/refs/pineapple_hallway.png",
+  "out": "media/clips/pineapple_hallway_03.mp4",
+  "prompt": "a tall pineapple woman with a green leafy crown, emerald off-shoulder evening gown, pearl necklace, long lashes, a grand marble hotel hallway under a crystal chandelier, sunset light through tall windows. Shock expression. The character turns the head slowly toward the camera, eyes widening. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "broccoli_penthouse",
+  "background": "#40260d",
+  "seed": 1010,
+  "image": "media/refs/broccoli_penthouse.png",
+  "out": "media/clips/broccoli_penthouse_00.mp4",
+  "prompt": "an elderly broccoli woman with a dense green floret head, ivory silk robe, pearl necklace, reading glasses on a chain, a luxurious penthouse living room at night, floor-to-ceiling windows, city skyline, warm lamps. Anger expression. The character points accusingly at the camera, then lowers the arm and shakes the head. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "broccoli_penthouse",
+  "background": "#40260d",
+  "seed": 1011,
+  "image": "media/refs/broccoli_penthouse.png",
+  "out": "media/clips/broccoli_penthouse_01.mp4",
+  "prompt": "an elderly broccoli woman with a dense green floret head, ivory silk robe, pearl necklace, reading glasses on a chain, a luxurious penthouse living room at night, floor-to-ceiling windows, city skyline, warm lamps. Anger expression. The character crosses the arms, taps a foot and glares. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "broccoli_penthouse",
+  "background": "#40260d",
+  "seed": 1012,
+  "image": "media/refs/broccoli_penthouse.png",
+  "out": "media/clips/broccoli_penthouse_02.mp4",
+  "prompt": "an elderly broccoli woman with a dense green floret head, ivory silk robe, pearl necklace, reading glasses on a chain, a luxurious penthouse living room at night, floor-to-ceiling windows, city skyline, warm lamps. Anger expression. The character waves both arms while scolding, then folds the hands. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "broccoli_penthouse",
+  "background": "#40260d",
+  "seed": 1013,
+  "image": "media/refs/broccoli_penthouse.png",
+  "out": "media/clips/broccoli_penthouse_03.mp4",
+  "prompt": "an elderly broccoli woman with a dense green floret head, ivory silk robe, pearl necklace, reading glasses on a chain, a luxurious penthouse living room at night, floor-to-ceiling windows, city skyline, warm lamps. Anger expression. The character leans forward with a hand on the hip, jabbing a finger. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "apple_ceo_office",
+  "background": "#40400d",
+  "seed": 1020,
+  "image": "media/refs/apple_ceo_office.png",
+  "out": "media/clips/apple_ceo_office_00.mp4",
+  "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "apple_ceo_office",
+  "background": "#40400d",
+  "seed": 1021,
+  "image": "media/refs/apple_ceo_office.png",
+  "out": "media/clips/apple_ceo_office_01.mp4",
+  "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. The character adjusts the tie, looks left, then right, nervous. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "apple_ceo_office",
+  "background": "#40400d",
+  "seed": 1022,
+  "image": "media/refs/apple_ceo_office.png",
+  "out": "media/clips/apple_ceo_office_02.mp4",
+  "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. The character raises both hands in defense and steps backward. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "apple_ceo_office",
+  "background": "#40400d",
+  "seed": 1023,
+  "image": "media/refs/apple_ceo_office.png",
+  "out": "media/clips/apple_ceo_office_03.mp4",
+  "prompt": "a red apple man with a small leaf on the stem, tailored black suit, white shirt, black tie, gold watch, a corner office with glass walls, a dark wooden desk, evening city view. Guilt expression. The character rubs the back of the neck and avoids the camera. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "cherry_gate_rain",
+  "background": "#26400d",
+  "seed": 1030,
+  "image": "media/refs/cherry_gate_rain.png",
+  "out": "media/clips/cherry_gate_rain_00.mp4",
+  "prompt": "a dark cherry woman with a long stem, red satin dress, diamond necklace, mascara running, outside a mansion gate at night in the rain, wet asphalt reflections, a suitcase at the feet. Grief expression. The character wipes a tear with the back of the hand and lifts the chin. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "cherry_gate_rain",
+  "background": "#26400d",
+  "seed": 1031,
+  "image": "media/refs/cherry_gate_rain.png",
+  "out": "media/clips/cherry_gate_rain_01.mp4",
+  "prompt": "a dark cherry woman with a long stem, red satin dress, diamond necklace, mascara running, outside a mansion gate at night in the rain, wet asphalt reflections, a suitcase at the feet. Grief expression. The character hugs the own shoulders and looks down, then up. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "cherry_gate_rain",
+  "background": "#26400d",
+  "seed": 1032,
+  "image": "media/refs/cherry_gate_rain.png",
+  "out": "media/clips/cherry_gate_rain_02.mp4",
+  "prompt": "a dark cherry woman with a long stem, red satin dress, diamond necklace, mascara running, outside a mansion gate at night in the rain, wet asphalt reflections, a suitcase at the feet. Grief expression. The character presses a hand to the mouth, shoulders shaking. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "cherry_gate_rain",
+  "background": "#26400d",
+  "seed": 1033,
+  "image": "media/refs/cherry_gate_rain.png",
+  "out": "media/clips/cherry_gate_rain_03.mp4",
+  "prompt": "a dark cherry woman with a long stem, red satin dress, diamond necklace, mascara running, outside a mansion gate at night in the rain, wet asphalt reflections, a suitcase at the feet. Grief expression. The character slowly sinks the head, then straightens up bravely. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "grape_courtroom",
+  "background": "#0d400d",
+  "seed": 1040,
+  "image": "media/refs/grape_courtroom.png",
+  "out": "media/clips/grape_courtroom_00.mp4",
+  "prompt": "a tall purple grape man made of glossy grapes, tailored black suit, slicked hair, thin smile, a courtroom with wood panels and a harsh overhead light. Smug expression. The character leans back, crosses the arms and smirks, then nods slowly. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "grape_courtroom",
+  "background": "#0d400d",
+  "seed": 1041,
+  "image": "media/refs/grape_courtroom.png",
+  "out": "media/clips/grape_courtroom_01.mp4",
+  "prompt": "a tall purple grape man made of glossy grapes, tailored black suit, slicked hair, thin smile, a courtroom with wood panels and a harsh overhead light. Smug expression. The character straightens the jacket, spreads the hands and shrugs. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "grape_courtroom",
+  "background": "#0d400d",
+  "seed": 1042,
+  "image": "media/refs/grape_courtroom.png",
+  "out": "media/clips/grape_courtroom_02.mp4",
+  "prompt": "a tall purple grape man made of glossy grapes, tailored black suit, slicked hair, thin smile, a courtroom with wood panels and a harsh overhead light. Smug expression. The character taps the side of the nose and winks. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "grape_courtroom",
+  "background": "#0d400d",
+  "seed": 1043,
+  "image": "media/refs/grape_courtroom.png",
+  "out": "media/clips/grape_courtroom_03.mp4",
+  "prompt": "a tall purple grape man made of glossy grapes, tailored black suit, slicked hair, thin smile, a courtroom with wood panels and a harsh overhead light. Smug expression. The character claps slowly, three times, with a grin. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "banana_kitchen",
+  "background": "#0d4026",
+  "seed": 1050,
+  "image": "media/refs/banana_kitchen.png",
+  "out": "media/clips/banana_kitchen_00.mp4",
+  "prompt": "a stern banana woman with a tight bun, beige cardigan, brooch, thin-rimmed glasses, a mansion kitchen at breakfast, marble island, morning sun through the window. Anger expression. The character points accusingly at the camera, then lowers the arm and shakes the head. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "banana_kitchen",
+  "background": "#0d4026",
+  "seed": 1051,
+  "image": "media/refs/banana_kitchen.png",
+  "out": "media/clips/banana_kitchen_01.mp4",
+  "prompt": "a stern banana woman with a tight bun, beige cardigan, brooch, thin-rimmed glasses, a mansion kitchen at breakfast, marble island, morning sun through the window. Anger expression. The character crosses the arms, taps a foot and glares. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "banana_kitchen",
+  "background": "#0d4026",
+  "seed": 1052,
+  "image": "media/refs/banana_kitchen.png",
+  "out": "media/clips/banana_kitchen_02.mp4",
+  "prompt": "a stern banana woman with a tight bun, beige cardigan, brooch, thin-rimmed glasses, a mansion kitchen at breakfast, marble island, morning sun through the window. Anger expression. The character waves both arms while scolding, then folds the hands. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "banana_kitchen",
+  "background": "#0d4026",
+  "seed": 1053,
+  "image": "media/refs/banana_kitchen.png",
+  "out": "media/clips/banana_kitchen_03.mp4",
+  "prompt": "a stern banana woman with a tight bun, beige cardigan, brooch, thin-rimmed glasses, a mansion kitchen at breakfast, marble island, morning sun through the window. Anger expression. The character leans forward with a hand on the hip, jabbing a finger. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "lemon_hospital",
+  "background": "#0d4040",
+  "seed": 1060,
+  "image": "media/refs/lemon_hospital.png",
+  "out": "media/clips/lemon_hospital_00.mp4",
+  "prompt": "a nervous lemon man, grey suit, loosened tie, sweat drops on the peel, a hospital corridor with cold fluorescent light and rain on the windows. Guilt expression. The character looks down at a phone, smiles, then hides it behind the back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "lemon_hospital",
+  "background": "#0d4040",
+  "seed": 1061,
+  "image": "media/refs/lemon_hospital.png",
+  "out": "media/clips/lemon_hospital_01.mp4",
+  "prompt": "a nervous lemon man, grey suit, loosened tie, sweat drops on the peel, a hospital corridor with cold fluorescent light and rain on the windows. Guilt expression. The character adjusts the tie, looks left, then right, nervous. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "lemon_hospital",
+  "background": "#0d4040",
+  "seed": 1062,
+  "image": "media/refs/lemon_hospital.png",
+  "out": "media/clips/lemon_hospital_02.mp4",
+  "prompt": "a nervous lemon man, grey suit, loosened tie, sweat drops on the peel, a hospital corridor with cold fluorescent light and rain on the windows. Guilt expression. The character raises both hands in defense and steps backward. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "lemon_hospital",
+  "background": "#0d4040",
+  "seed": 1063,
+  "image": "media/refs/lemon_hospital.png",
+  "out": "media/clips/lemon_hospital_03.mp4",
+  "prompt": "a nervous lemon man, grey suit, loosened tie, sweat drops on the peel, a hospital corridor with cold fluorescent light and rain on the windows. Guilt expression. The character rubs the back of the neck and avoids the camera. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "apple_boy_school",
+  "background": "#0d2640",
+  "seed": 1070,
+  "image": "media/refs/apple_boy_school.png",
+  "out": "media/clips/apple_boy_school_00.mp4",
+  "prompt": "a small red apple boy, navy school blazer with a crest, striped tie, grey shorts, white socks, a school hallway with lockers and a trophy cabinet, afternoon light. Grief expression. The character wipes a tear with the back of the hand and lifts the chin. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "apple_boy_school",
+  "background": "#0d2640",
+  "seed": 1071,
+  "image": "media/refs/apple_boy_school.png",
+  "out": "media/clips/apple_boy_school_01.mp4",
+  "prompt": "a small red apple boy, navy school blazer with a crest, striped tie, grey shorts, white socks, a school hallway with lockers and a trophy cabinet, afternoon light. Grief expression. The character hugs the own shoulders and looks down, then up. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "apple_boy_school",
+  "background": "#0d2640",
+  "seed": 1072,
+  "image": "media/refs/apple_boy_school.png",
+  "out": "media/clips/apple_boy_school_02.mp4",
+  "prompt": "a small red apple boy, navy school blazer with a crest, striped tie, grey shorts, white socks, a school hallway with lockers and a trophy cabinet, afternoon light. Grief expression. The character presses a hand to the mouth, shoulders shaking. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "apple_boy_school",
+  "background": "#0d2640",
+  "seed": 1073,
+  "image": "media/refs/apple_boy_school.png",
+  "out": "media/clips/apple_boy_school_03.mp4",
+  "prompt": "a small red apple boy, navy school blazer with a crest, striped tie, grey shorts, white socks, a school hallway with lockers and a trophy cabinet, afternoon light. Grief expression. The character slowly sinks the head, then straightens up bravely. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "strawberry_bedroom",
+  "background": "#0d0d40",
+  "seed": 1080,
+  "image": "media/refs/strawberry_bedroom.png",
+  "out": "media/clips/strawberry_bedroom_00.mp4",
+  "prompt": "a teenage strawberry girl with a green leaf fringe, pink hoodie, headphones around the neck, a teenage bedroom with posters, fairy lights and a messy desk. Anger expression. The character points accusingly at the camera, then lowers the arm and shakes the head. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "strawberry_bedroom",
+  "background": "#0d0d40",
+  "seed": 1081,
+  "image": "media/refs/strawberry_bedroom.png",
+  "out": "media/clips/strawberry_bedroom_01.mp4",
+  "prompt": "a teenage strawberry girl with a green leaf fringe, pink hoodie, headphones around the neck, a teenage bedroom with posters, fairy lights and a messy desk. Anger expression. The character crosses the arms, taps a foot and glares. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "strawberry_bedroom",
+  "background": "#0d0d40",
+  "seed": 1082,
+  "image": "media/refs/strawberry_bedroom.png",
+  "out": "media/clips/strawberry_bedroom_02.mp4",
+  "prompt": "a teenage strawberry girl with a green leaf fringe, pink hoodie, headphones around the neck, a teenage bedroom with posters, fairy lights and a messy desk. Anger expression. The character waves both arms while scolding, then folds the hands. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "strawberry_bedroom",
+  "background": "#0d0d40",
+  "seed": 1083,
+  "image": "media/refs/strawberry_bedroom.png",
+  "out": "media/clips/strawberry_bedroom_03.mp4",
+  "prompt": "a teenage strawberry girl with a green leaf fringe, pink hoodie, headphones around the neck, a teenage bedroom with posters, fairy lights and a messy desk. Anger expression. The character leans forward with a hand on the hip, jabbing a finger. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "watermelon_police",
+  "background": "#260d40",
+  "seed": 1090,
+  "image": "media/refs/watermelon_police.png",
+  "out": "media/clips/watermelon_police_00.mp4",
+  "prompt": "a large watermelon police officer with a green striped rind, navy uniform, badge, cap, a hotel lobby with a marble floor, a reception desk and gold lamps. Smug expression. The character leans back, crosses the arms and smirks, then nods slowly. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "watermelon_police",
+  "background": "#260d40",
+  "seed": 1091,
+  "image": "media/refs/watermelon_police.png",
+  "out": "media/clips/watermelon_police_01.mp4",
+  "prompt": "a large watermelon police officer with a green striped rind, navy uniform, badge, cap, a hotel lobby with a marble floor, a reception desk and gold lamps. Smug expression. The character straightens the jacket, spreads the hands and shrugs. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "watermelon_police",
+  "background": "#260d40",
+  "seed": 1092,
+  "image": "media/refs/watermelon_police.png",
+  "out": "media/clips/watermelon_police_02.mp4",
+  "prompt": "a large watermelon police officer with a green striped rind, navy uniform, badge, cap, a hotel lobby with a marble floor, a reception desk and gold lamps. Smug expression. The character taps the side of the nose and winks. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "watermelon_police",
+  "background": "#260d40",
+  "seed": 1093,
+  "image": "media/refs/watermelon_police.png",
+  "out": "media/clips/watermelon_police_03.mp4",
+  "prompt": "a large watermelon police officer with a green striped rind, navy uniform, badge, cap, a hotel lobby with a marble floor, a reception desk and gold lamps. Smug expression. The character claps slowly, three times, with a grin. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "orange_waiter",
+  "background": "#400d40",
+  "seed": 1100,
+  "image": "media/refs/orange_waiter.png",
+  "out": "media/clips/orange_waiter_00.mp4",
+  "prompt": "an orange waiter with a shiny dimpled peel, white shirt, black bow tie, black apron, a tray in one hand, a rooftop restaurant at golden hour, white tablecloths, candles, city skyline. Shock expression. The character gasps, raises one hand to the chest and takes one step back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "orange_waiter",
+  "background": "#400d40",
+  "seed": 1101,
+  "image": "media/refs/orange_waiter.png",
+  "out": "media/clips/orange_waiter_01.mp4",
+  "prompt": "an orange waiter with a shiny dimpled peel, white shirt, black bow tie, black apron, a tray in one hand, a rooftop restaurant at golden hour, white tablecloths, candles, city skyline. Shock expression. The character covers the mouth with both hands, eyes wide, then slowly lowers them. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "orange_waiter",
+  "background": "#400d40",
+  "seed": 1102,
+  "image": "media/refs/orange_waiter.png",
+  "out": "media/clips/orange_waiter_02.mp4",
+  "prompt": "an orange waiter with a shiny dimpled peel, white shirt, black bow tie, black apron, a tray in one hand, a rooftop restaurant at golden hour, white tablecloths, candles, city skyline. Shock expression. The character raises both hands in shock, then puts one hand on the hip. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "orange_waiter",
+  "background": "#400d40",
+  "seed": 1103,
+  "image": "media/refs/orange_waiter.png",
+  "out": "media/clips/orange_waiter_03.mp4",
+  "prompt": "an orange waiter with a shiny dimpled peel, white shirt, black bow tie, black apron, a tray in one hand, a rooftop restaurant at golden hour, white tablecloths, candles, city skyline. Shock expression. The character turns the head slowly toward the camera, eyes widening. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "avocado_doctor",
+  "background": "#400d26",
+  "seed": 1110,
+  "image": "media/refs/avocado_doctor.png",
+  "out": "media/clips/avocado_doctor_00.mp4",
+  "prompt": "an avocado doctor with a dark bumpy skin, white coat, stethoscope, clipboard, a bright hospital room with a bed, monitors and a window. Shock expression. The character gasps, raises one hand to the chest and takes one step back. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "avocado_doctor",
+  "background": "#400d26",
+  "seed": 1111,
+  "image": "media/refs/avocado_doctor.png",
+  "out": "media/clips/avocado_doctor_01.mp4",
+  "prompt": "an avocado doctor with a dark bumpy skin, white coat, stethoscope, clipboard, a bright hospital room with a bed, monitors and a window. Shock expression. The character covers the mouth with both hands, eyes wide, then slowly lowers them. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "avocado_doctor",
+  "background": "#400d26",
+  "seed": 1112,
+  "image": "media/refs/avocado_doctor.png",
+  "out": "media/clips/avocado_doctor_02.mp4",
+  "prompt": "an avocado doctor with a dark bumpy skin, white coat, stethoscope, clipboard, a bright hospital room with a bed, monitors and a window. Shock expression. The character raises both hands in shock, then puts one hand on the hip. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ },
+ {
+  "mode": "i2v",
+  "scene": "avocado_doctor",
+  "background": "#400d26",
+  "seed": 1113,
+  "image": "media/refs/avocado_doctor.png",
+  "out": "media/clips/avocado_doctor_03.mp4",
+  "prompt": "an avocado doctor with a dark bumpy skin, white coat, stethoscope, clipboard, a bright hospital room with a bed, monitors and a window. Shock expression. The character turns the head slowly toward the camera, eyes widening. One character only, standing, full body visible from head to feet, facing the camera, medium-wide shot, vertical 9:16, no other people."
+ }
+]

@@ -1,0 +1,64 @@
+{
+  "version": 6,
+  "nodes": [
+    {
+      "id": 1,
+      "name": "Load Movie",
+      "type": "image.loadMovie",
+      "x": 100,
+      "y": 50,
+      "values": {
+        "file": {
+          "type": "value",
+          "value": "media/myrthe-ai-control.mp4"
+        }
+      }
+    },
+    {
+      "id": 5,
+      "name": "Stack",
+      "type": "image.stack",
+      "x": 100,
+      "y": 450
+    },
+    {
+      "id": 6,
+      "name": "Out",
+      "type": "core.out",
+      "x": 100,
+      "y": 550
+    },
+    {
+      "id": 7,
+      "name": "Detect Pose",
+      "type": "ml.detectPose",
+      "x": 154,
+      "y": 194,
+      "values": {
+        "model": {
+          "type": "value",
+          "value": "heavy"
+        }
+      }
+    }
+  ],
+  "connections": [
+    {
+      "outNode": 5,
+      "outPort": "out",
+      "inNode": 6,
+      "inPort": "in"
+    },
+    {
+      "outNode": 1,
+      "outPort": "out",
+      "inNode": 7,
+      "inPort": "in"
+    }
+  ],
+  "settings": {
+    "oscEnabled": false,
+    "oscPort": 8000
+  },
+  "types": []
+}

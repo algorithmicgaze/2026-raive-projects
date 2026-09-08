@@ -1,0 +1,9 @@
+datasets/
+output-*/
+diary/
+.venv/
+*.mp4
+*.zip
+stylegan/exp/
+*.figment-optimized.json
+stylegan/*.png
